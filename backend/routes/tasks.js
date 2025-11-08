@@ -382,4 +382,251 @@ router.get('/', async (req, res) => {
     }
 });
 
+// ============================================================================
+// PUT /api/projects/:id/tasks/:taskId - Update a task
+// ============================================================================
+router.put('/:taskId', async (req, res) => {
+    try {
+        const projectId = req.params.id;
+        const taskId = req.params.taskId;
+        const {
+            title,
+            description,
+            state,
+            priority,
+            start_date,
+            due_date,
+            estimate_hours,
+            story_points,
+            labels,
+            list_id,
+            parent_task_id,
+            position
+        } = req.body;
+
+        // Check if task exists and belongs to project
+        const taskCheck = await pool.query(
+            'SELECT id, project_id FROM project.tasks WHERE id = $1 AND project_id = $2',
+            [taskId, projectId]
+        );
+
+        if (taskCheck.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Task not found in this project'
+            });
+        }
+
+        // Validate state if provided
+        const validStates = ['new', 'in_progress', 'blocked', 'done'];
+        if (state && !validStates.includes(state)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid state. Must be one of: ${validStates.join(', ')}`,
+                field: 'state'
+            });
+        }
+
+        // Validate priority if provided
+        const validPriorities = ['low', 'medium', 'high', 'urgent'];
+        if (priority && !validPriorities.includes(priority)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid priority. Must be one of: ${validPriorities.join(', ')}`,
+                field: 'priority'
+            });
+        }
+
+        // Build dynamic update query
+        const updateFields = [];
+        const values = [taskId, projectId];
+        let paramCount = 2;
+
+        if (title !== undefined) {
+            paramCount++;
+            updateFields.push(`title = $${paramCount}`);
+            values.push(title.trim());
+        }
+        if (description !== undefined) {
+            paramCount++;
+            updateFields.push(`description = $${paramCount}`);
+            values.push(description);
+        }
+        if (state !== undefined) {
+            paramCount++;
+            updateFields.push(`state = $${paramCount}::project.task_state`);
+            values.push(state);
+        }
+        if (priority !== undefined) {
+            paramCount++;
+            updateFields.push(`priority = $${paramCount}::project.task_priority`);
+            values.push(priority);
+        }
+        if (start_date !== undefined) {
+            paramCount++;
+            updateFields.push(`start_date = $${paramCount}`);
+            values.push(start_date);
+        }
+        if (due_date !== undefined) {
+            paramCount++;
+            updateFields.push(`due_date = $${paramCount}`);
+            values.push(due_date);
+        }
+        if (estimate_hours !== undefined) {
+            paramCount++;
+            updateFields.push(`estimate_hours = $${paramCount}`);
+            values.push(estimate_hours);
+        }
+        if (story_points !== undefined) {
+            paramCount++;
+            updateFields.push(`story_points = $${paramCount}`);
+            values.push(story_points);
+        }
+        if (labels !== undefined) {
+            paramCount++;
+            updateFields.push(`labels = $${paramCount}::text[]`);
+            values.push(labels);
+        }
+        if (list_id !== undefined) {
+            paramCount++;
+            updateFields.push(`list_id = $${paramCount}`);
+            values.push(list_id);
+        }
+        if (parent_task_id !== undefined) {
+            paramCount++;
+            updateFields.push(`parent_task_id = $${paramCount}`);
+            values.push(parent_task_id);
+        }
+        if (position !== undefined) {
+            paramCount++;
+            updateFields.push(`position = $${paramCount}`);
+            values.push(position);
+        }
+
+        if (updateFields.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No fields to update'
+            });
+        }
+
+        // Add updated_at
+        updateFields.push('updated_at = CURRENT_TIMESTAMP');
+
+        const updateQuery = `
+            UPDATE project.tasks
+            SET ${updateFields.join(', ')}
+            WHERE id = $1 AND project_id = $2
+            RETURNING *
+        `;
+
+        const result = await pool.query(updateQuery, values);
+        const updatedTask = result.rows[0];
+
+        res.status(200).json({
+            success: true,
+            message: 'Task updated successfully',
+            data: updatedTask
+        });
+
+    } catch (error) {
+        console.error('Error updating task:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update task',
+            error: process.env.NODE_ENV === 'production' 
+                ? 'Internal server error' 
+                : error.message
+        });
+    }
+});
+
+// ============================================================================
+// DELETE /api/projects/:id/tasks/:taskId - Delete a task
+// ============================================================================
+router.delete('/:taskId', async (req, res) => {
+    try {
+        const projectId = req.params.id;
+        const taskId = req.params.taskId;
+
+        // Check if task exists and belongs to project
+        const taskCheck = await pool.query(
+            'SELECT id FROM project.tasks WHERE id = $1 AND project_id = $2',
+            [taskId, projectId]
+        );
+
+        if (taskCheck.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Task not found in this project'
+            });
+        }
+
+        // Delete the task
+        await pool.query(
+            'DELETE FROM project.tasks WHERE id = $1 AND project_id = $2',
+            [taskId, projectId]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Task deleted successfully'
+        });
+
+    } catch (error) {
+        console.error('Error deleting task:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete task',
+            error: process.env.NODE_ENV === 'production' 
+                ? 'Internal server error' 
+                : error.message
+        });
+    }
+});
+
+// ============================================================================
+// GET /api/projects/:id/tasks/:taskId - Get a single task
+// ============================================================================
+router.get('/:taskId', async (req, res) => {
+    try {
+        const projectId = req.params.id;
+        const taskId = req.params.taskId;
+
+        const query = `
+            SELECT 
+                t.*,
+                tl.name as list_name,
+                (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title
+            FROM project.tasks t
+            LEFT JOIN project.task_lists tl ON t.list_id = tl.id
+            WHERE t.id = $1 AND t.project_id = $2
+        `;
+
+        const result = await pool.query(query, [taskId, projectId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Task not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error fetching task:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch task',
+            error: process.env.NODE_ENV === 'production' 
+                ? 'Internal server error' 
+                : error.message
+        });
+    }
+});
+
 module.exports = router;
