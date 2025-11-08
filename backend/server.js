@@ -26,6 +26,7 @@ const { testConnection, closePool } = require('./config/database');
 const userRoutes = require('./routes/users');
 const projectRoutes = require('./routes/projects');
 const uploadRoutes = require('./routes/upload');
+const taskRoutes = require('./routes/tasks');
 
 // Initialize Express app
 const app = express();
@@ -95,6 +96,10 @@ app.use('/api/users', userRoutes);
 
 // Project routes
 app.use('/api/projects', projectRoutes);
+
+// Task routes (nested under projects)
+// NOTE: This creates routes like /api/projects/:id/tasks
+app.use('/api/projects/:id/tasks', taskRoutes);
 
 // Upload routes
 app.use('/api/upload', uploadRoutes);

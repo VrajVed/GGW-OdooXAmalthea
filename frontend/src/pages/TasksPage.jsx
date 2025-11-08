@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import KanbanColumn from '../components/KanbanColumn'
 import TaskModal from '../components/TaskModal'
 import ProjectTasksDialog from '../components/ProjectTasksDialog'
 import TaskEditDialog from '../components/TaskEditDialog'
+import { projectApi, taskApi } from '../lib/api'
 
 const tasksData = {
   new: [
@@ -144,11 +145,90 @@ function TasksPage() {
   const [selectedProject, setSelectedProject] = useState(null)
   const [isTaskEditDialogOpen, setIsTaskEditDialogOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
+  
+  // New state for backend data
+  const [projects, setProjects] = useState([])
+  const [allTasks, setAllTasks] = useState({ new: [], inProgress: [], done: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const allTasks = {
-    new: tasksData.new,
-    inProgress: tasksData.inProgress,
-    done: tasksData.done,
+  // Load data on mount
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  // Fetch projects and tasks from backend
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      
+      // 1. Get all projects
+      const projectsResponse = await projectApi.getAll()
+      if (!projectsResponse.success) {
+        throw new Error('Failed to load projects')
+      }
+      
+      const projectsList = projectsResponse.data
+      setProjects(projectsList)
+
+      // 2. Get tasks for each project
+      const tasksPromises = projectsList.map(project => 
+        taskApi.getAll(project.id)
+      )
+      const tasksResponses = await Promise.all(tasksPromises)
+
+      // 3. Organize tasks by state
+      const organized = { new: [], inProgress: [], done: [] }
+      
+      projectsList.forEach((project, index) => {
+        const tasksResponse = tasksResponses[index]
+        const projectTasks = tasksResponse.success ? tasksResponse.data : []
+
+        projectTasks.forEach(task => {
+          // Create task card data
+          const taskCard = {
+            id: task.id,
+            title: project.name,
+            description: project.description,
+            project: project.name,
+            badges: task.labels || [],
+            dueDate: task.due_date || '',
+            tasks: 0,
+            assignedUsers: [{ name: "User", initials: "U" }],
+            taskList: [{
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              deadline: task.due_date,
+              tags: task.labels || [],
+              assignee: "User",
+              created: task.created_at,
+              timesheets: [],
+              changeHistory: []
+            }],
+            projectId: project.id,
+            projectData: project
+          }
+
+          // Sort into columns by state
+          if (task.state === 'new') {
+            organized.new.push(taskCard)
+          } else if (task.state === 'in_progress' || task.state === 'blocked') {
+            organized.inProgress.push(taskCard)
+          } else if (task.state === 'done') {
+            organized.done.push(taskCard)
+          }
+        })
+      })
+
+      setAllTasks(organized)
+      setLoading(false)
+      
+    } catch (err) {
+      console.error('Error loading data:', err)
+      setError(err.message)
+      setLoading(false)
+    }
   }
 
   // When clicking on a task card, open the project details dialog
@@ -195,12 +275,46 @@ function TasksPage() {
     setIsTaskEditDialogOpen(true)
   }
 
-  const handleSaveTask = (updatedTask) => {
-    console.log('Saving task:', updatedTask)
-    // Here you would update the task in your data structure
-    // For now, we'll just close the dialog
-    setIsTaskEditDialogOpen(false)
-    setEditingTask(null)
+  const handleSaveTask = async (updatedTask) => {
+    try {
+      const projectId = selectedProject?.projectId || selectedProject?.id || projects[0]?.id
+      
+      if (!projectId) {
+        alert('No project selected')
+        return
+      }
+
+      // Prepare task data
+      const taskData = {
+        title: updatedTask.title,
+        description: updatedTask.description || '',
+        state: updatedTask.state || 'new',
+        priority: updatedTask.priority || 'medium',
+        due_date: updatedTask.deadline || null,
+        labels: updatedTask.tags || [],
+      }
+
+      // Check if updating (UUID) or creating (temporary ID)
+      const isExisting = updatedTask.id && typeof updatedTask.id === 'string' && updatedTask.id.includes('-')
+      
+      let response
+      if (isExisting) {
+        response = await taskApi.update(projectId, updatedTask.id, taskData)
+      } else {
+        response = await taskApi.create(projectId, taskData)
+      }
+
+      if (response.success) {
+        await loadData() // Reload to show changes
+        setIsTaskEditDialogOpen(false)
+        setEditingTask(null)
+      } else {
+        alert('Failed to save task: ' + response.message)
+      }
+    } catch (err) {
+      console.error('Error saving task:', err)
+      alert('Error saving task: ' + err.message)
+    }
   }
 
   const handleCloseTaskEditDialog = () => {
@@ -272,27 +386,37 @@ function TasksPage() {
       </header>
 
       <div className="p-8">
-        <div className="flex gap-6 overflow-x-auto pb-4">
-          <KanbanColumn
-            title="New"
-            count={tasksData.new.length}
-            tasks={tasksData.new}
-            onTaskClick={handleTaskClick}
-          />
-          <KanbanColumn
-            title="In Progress"
-            count={tasksData.inProgress.length}
-            tasks={tasksData.inProgress}
-            onTaskClick={handleTaskClick}
-          />
-          <KanbanColumn
-            title="Completed"
-            count={tasksData.done.length}
-            tasks={tasksData.done}
-            isCompleted={true}
-            onTaskClick={handleTaskClick}
-          />
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">Loading tasks...</p>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-red-500">Error: {error}</p>
+          </div>
+        ) : (
+          <div className="flex gap-6 overflow-x-auto pb-4">
+            <KanbanColumn
+              title="New"
+              count={allTasks.new.length}
+              tasks={allTasks.new}
+              onTaskClick={handleTaskClick}
+            />
+            <KanbanColumn
+              title="In Progress"
+              count={allTasks.inProgress.length}
+              tasks={allTasks.inProgress}
+              onTaskClick={handleTaskClick}
+            />
+            <KanbanColumn
+              title="Completed"
+              count={allTasks.done.length}
+              tasks={allTasks.done}
+              isCompleted={true}
+              onTaskClick={handleTaskClick}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

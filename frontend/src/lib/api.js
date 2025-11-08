@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
   login: '/api/users/login',
   users: '/api/users',
   projects: '/api/projects',
+  tasks: (projectId) => `/api/projects/${projectId}/tasks`,
 }
 
 // Helper function for API calls
@@ -90,6 +91,32 @@ export const projectApi = {
   delete: async (id) => {
     return await apiCall(`${API_ENDPOINTS.projects}/${id}`, {
       method: 'DELETE',
+    })
+  },
+}
+
+// Task API functions
+export const taskApi = {
+  // Get all tasks for a project
+  getAll: async (projectId) => {
+    return await apiCall(API_ENDPOINTS.tasks(projectId), {
+      method: 'GET',
+    })
+  },
+
+  // Create task
+  create: async (projectId, taskData) => {
+    return await apiCall(API_ENDPOINTS.tasks(projectId), {
+      method: 'POST',
+      body: JSON.stringify(taskData),
+    })
+  },
+
+  // Update task
+  update: async (projectId, taskId, taskData) => {
+    return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
+      method: 'PUT',
+      body: JSON.stringify(taskData),
     })
   },
 }
