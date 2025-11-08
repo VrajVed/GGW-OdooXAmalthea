@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   projects: '/api/projects',
   tasks: (projectId) => `/api/projects/${projectId}/tasks`,
   expenses: '/api/expenses',
+  timesheets: '/api/timesheets',
 }
 
 // Helper function for API calls
@@ -251,6 +252,107 @@ export const taskApi = {
     return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
       method: 'PUT',
       body: JSON.stringify(taskData),
+    })
+  },
+}
+
+// Timesheets API functions
+export const timesheetsApi = {
+  // Get all timesheets with filters
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.timesheets}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get timesheet stats
+  getStats: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.timesheets}/stats${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get single timesheet
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.timesheets}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create timesheet
+  create: async (timesheetData) => {
+    return await apiCall(API_ENDPOINTS.timesheets, {
+      method: 'POST',
+      body: JSON.stringify(timesheetData),
+    })
+  },
+
+  // Update timesheet
+  update: async (id, timesheetData) => {
+    return await apiCall(`${API_ENDPOINTS.timesheets}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(timesheetData),
+    })
+  },
+
+  // Approve timesheet
+  approve: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.timesheets}/${id}/approve`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Reject timesheet
+  reject: async (id, reason) => {
+    return await apiCall(`${API_ENDPOINTS.timesheets}/${id}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    })
+  },
+
+  // Bulk approve
+  bulkApprove: async (timesheetIds) => {
+    return await apiCall(`${API_ENDPOINTS.timesheets}/bulk-approve`, {
+      method: 'POST',
+      body: JSON.stringify({ timesheet_ids: timesheetIds }),
+    })
+  },
+
+  // Bulk reject
+  bulkReject: async (timesheetIds, reason) => {
+    return await apiCall(`${API_ENDPOINTS.timesheets}/bulk-reject`, {
+      method: 'POST',
+      body: JSON.stringify({ timesheet_ids: timesheetIds, reason }),
+    })
+  },
+
+  // Get user rates
+  getUserRates: async (userId, date) => {
+    const queryParams = new URLSearchParams()
+    if (date) {
+      queryParams.append('date', date)
+    }
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.timesheets}/user-rates/${userId}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
     })
   },
 }

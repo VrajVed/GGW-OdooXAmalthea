@@ -76,6 +76,38 @@ router.post('/register', async (req, res) => {
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
         
         // ========================================
+        // Get or Create Organization
+        // ========================================
+        let orgId;
+        const orgCheckQuery = `
+            SELECT id FROM auth.orgs 
+            WHERE id = '00000000-0000-0000-0000-000000000001'::uuid
+            LIMIT 1
+        `;
+        const orgResult = await query(orgCheckQuery);
+        
+        if (orgResult.rows.length > 0) {
+            orgId = orgResult.rows[0].id;
+        } else {
+            // Try to get any existing org
+            const anyOrgQuery = 'SELECT id FROM auth.orgs LIMIT 1';
+            const anyOrgResult = await query(anyOrgQuery);
+            
+            if (anyOrgResult.rows.length > 0) {
+                orgId = anyOrgResult.rows[0].id;
+            } else {
+                // Create default org if none exists
+                const createOrgQuery = `
+                    INSERT INTO auth.orgs (id, name, slug, base_currency, default_timezone, created_at, updated_at)
+                    VALUES ('00000000-0000-0000-0000-000000000001'::uuid, 'Default Organization', 'default-org', 'INR', 'Asia/Kolkata', NOW(), NOW())
+                    RETURNING id
+                `;
+                const createOrgResult = await query(createOrgQuery);
+                orgId = createOrgResult.rows[0].id;
+            }
+        }
+        
+        // ========================================
         // Insert User into Database
         // Using parameterized query to prevent SQL injection
         // ========================================
@@ -85,12 +117,10 @@ router.post('/register', async (req, res) => {
             RETURNING id, email, full_name, is_active, created_at
         `;
         
-        // Use default org_id from seed data
-        const defaultOrgId = '00000000-0000-0000-0000-000000000001';
         const fullName = `${firstName.trim()} ${lastName.trim()}`;
         
         const values = [
-            defaultOrgId,
+            orgId,
             fullName,
             workEmail.toLowerCase().trim(),  // Normalize email to lowercase
             passwordHash,
