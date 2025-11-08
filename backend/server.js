@@ -23,6 +23,7 @@ const { testConnection, closePool } = require('./config/database');
 
 // Import routes
 const userRoutes = require('./routes/users');
+const projectRoutes = require('./routes/projects');
 
 // Initialize Express app
 const app = express();
@@ -78,13 +79,17 @@ app.get('/api', (req, res) => {
         endpoints: {
             users: '/api/users',
             register: 'POST /api/users/register',
-            login: 'POST /api/users/login'
+            login: 'POST /api/users/login',
+            projects: '/api/projects'
         }
     });
 });
 
 // User routes
 app.use('/api/users', userRoutes);
+
+// Project routes
+app.use('/api/projects', projectRoutes);
 
 // ============================================================================
 // Error Handling Middleware

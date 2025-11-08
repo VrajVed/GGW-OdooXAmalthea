@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
   register: '/api/users/register',
   login: '/api/users/login',
   users: '/api/users',
+  projects: '/api/projects',
 }
 
 // Helper function for API calls
@@ -51,4 +52,44 @@ export const removeUser = () => {
 
 export const isAuthenticated = () => {
   return !!getUser()
+}
+
+// Project API functions
+export const projectApi = {
+  // Get all projects
+  getAll: async () => {
+    return await apiCall(API_ENDPOINTS.projects, {
+      method: 'GET',
+    })
+  },
+
+  // Get single project
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.projects}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create project
+  create: async (projectData) => {
+    return await apiCall(API_ENDPOINTS.projects, {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    })
+  },
+
+  // Update project
+  update: async (id, projectData) => {
+    return await apiCall(`${API_ENDPOINTS.projects}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(projectData),
+    })
+  },
+
+  // Delete project
+  delete: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.projects}/${id}`, {
+      method: 'DELETE',
+    })
+  },
 }
