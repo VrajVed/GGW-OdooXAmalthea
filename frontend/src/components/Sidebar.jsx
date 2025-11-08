@@ -62,8 +62,7 @@ function Sidebar() {
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
-      {/* Logo */}
-      <div className="px-6 py-6 border-b border-gray-200">
+  <div className="px-6 py-6 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#714b67' }}>
             <span className="text-white font-bold text-lg">V</span>
@@ -72,8 +71,7 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
+  <nav className="flex-1 px-4 py-6 space-y-1">
         {navigationItems.map((item) => (
           <NavItem
             key={item.path}
@@ -82,8 +80,7 @@ function Sidebar() {
           />
         ))}
 
-        {/* Database Section */}
-        <div className="pt-6 pb-2">
+  <div className="pt-6 pb-2">
           <h3 className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
             Database
           </h3>
@@ -98,8 +95,7 @@ function Sidebar() {
           </div>
         </div>
 
-        {/* Other Items */}
-        <div className="pt-4 space-y-1">
+  <div className="pt-4 space-y-1">
           {otherItems.map((item) => (
             <NavItem
               key={item.path}
@@ -110,8 +106,7 @@ function Sidebar() {
         </div>
       </nav>
 
-      {/* Bottom Section */}
-      <div className="px-4 py-4 border-t border-gray-200">
+  <div className="px-4 py-4 border-t border-gray-200">
         <div className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-50 cursor-pointer">
           <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
             <span className="text-white font-semibold text-sm">M</span>

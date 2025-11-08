@@ -12,13 +12,10 @@ function AnalyticsPage() {
   return (
     <div className="h-full bg-gray-50">
       <div className="w-full bg-white min-h-full">
-        {/* Header */}
         <div className="border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-gray-900">Analytics</h1>
           </div>
-
-          {/* Tabs */}
           <div className="flex items-center gap-6 border-b border-gray-200">
             <button
               onClick={() => setActiveTab('analytics')}
@@ -73,21 +70,17 @@ function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Column - Active Projects */}
             <div className="lg:col-span-9">
               <ActiveProjectsCard />
             </div>
 
-            {/* Right Column - Completed Task and Top Companies */}
             <div className="lg:col-span-3 space-y-6">
               <CompletedTaskCard />
               <TopCompaniesCard />
             </div>
 
-            {/* Bottom Row - Full Width */}
             <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6">
               <ActiveCompaniesCard />
               <CompletedProjectTargetCard />

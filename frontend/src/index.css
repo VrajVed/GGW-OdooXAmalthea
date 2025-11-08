@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,7 +34,16 @@
     @apply border-border;
   }
   body {
+    font-family: 'Playfair Display', Georgia, serif;
     @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    color: rgb(17 24 39 / 1);
   }
 }
 
@@ -42,6 +53,20 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+}
+
+@layer components {
+  .auth-box {
+    @apply bg-white border border-gray-200 rounded-2xl p-6 shadow-sm;
+  }
+
+  .auth-input:focus {
+    @apply ring-2 ring-purple-300 outline-none;
+  }
+
+  .auth-btn {
+    @apply bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-md;
   }
 }
 

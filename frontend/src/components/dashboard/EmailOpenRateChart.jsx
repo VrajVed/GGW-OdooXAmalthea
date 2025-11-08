@@ -5,7 +5,7 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const openRateData = [45, 52, 48, 60, 55, 58, 64.23, 62, 59, 65, 58, 61]
 
 function EmailOpenRateChart() {
-  const [hoveredIndex, setHoveredIndex] = useState(6) // July is highlighted by default
+  const [hoveredIndex, setHoveredIndex] = useState(6)
   const maxValue = 100
 
   return (
@@ -38,9 +38,9 @@ function EmailOpenRateChart() {
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="relative">
-        {/* Y-axis labels */}
+          <div className="relative">
+        
+        
         <div className="absolute left-0 top-0 bottom-12 flex flex-col justify-between text-xs text-gray-500" style={{ width: '30px' }}>
           <span>100%</span>
           <span>75%</span>
@@ -62,7 +62,7 @@ function EmailOpenRateChart() {
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  {/* Tooltip */}
+                  
                   {isHovered && (
                     <div 
                       className="absolute bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-20 whitespace-nowrap"
@@ -77,9 +77,8 @@ function EmailOpenRateChart() {
                     </div>
                   )}
 
-                  {/* Bar Container */}
+                  
                   <div className="w-full h-full flex items-end">
-                    {/* Bar */}
                     <div
                       className="w-full rounded-t transition-all duration-200 relative z-0"
                       style={{
@@ -94,7 +93,6 @@ function EmailOpenRateChart() {
             })}
           </div>
 
-          {/* X-axis labels */}
           <div className="flex justify-between mt-2 text-xs text-gray-500">
             {months.map((month, index) => (
               <span key={index} className="flex-1 text-center">

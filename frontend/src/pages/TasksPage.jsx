@@ -150,9 +150,8 @@ const tasksData = {
 
 function TasksPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [viewMode, setViewMode] = useState('kanban') // 'kanban', 'list', 'table'
+  const [viewMode, setViewMode] = useState('kanban')
 
-  // Combine all tasks for list and table views
   const allTasks = {
     planned: tasksData.planned,
     upcoming: tasksData.upcoming,
@@ -162,7 +161,6 @@ function TasksPage() {
   return (
     <div className="h-full bg-gray-50">
       <TaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 px-8 py-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-6 flex-1">
@@ -170,7 +168,7 @@ function TasksPage() {
               Tasks {viewMode === 'kanban' ? '(Kanban)' : viewMode === 'list' ? '(List)' : '(Table)'}
             </h1>
             
-            {/* Search Bar */}
+            
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -186,10 +184,10 @@ function TasksPage() {
               <span className="text-gray-400">?</span>
             </a>
           </div>
-
-          {/* Right Side */}
+ 
+          
           <div className="flex items-center gap-4">
-            {/* User Profile */}
+            
             <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-lg px-3 py-2">
               <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">BF</span>
@@ -202,8 +200,7 @@ function TasksPage() {
           </div>
         </div>
 
-        {/* View Tabs and Actions */}
-        <div className="flex items-center justify-between">
+  <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             <button
               onClick={() => setViewMode('list')}
@@ -270,8 +267,7 @@ function TasksPage() {
         </div>
       </header>
 
-      {/* Content based on view mode */}
-      <div className="p-8">
+  <div className="p-8">
         {viewMode === 'kanban' && (
           <div className="flex gap-6 overflow-x-auto pb-4">
             <KanbanColumn

@@ -79,8 +79,7 @@ function NoteCard({ note }) {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer shadow-sm">
-      {/* Badges */}
-      <div className="flex flex-wrap gap-2 mb-3">
+  <div className="flex flex-wrap gap-2 mb-3">
         {note.badges.map((badge) => (
           <span
             key={badge}
@@ -93,23 +92,19 @@ function NoteCard({ note }) {
         ))}
       </div>
 
-      {/* Title */}
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+  <h3 className="text-lg font-semibold text-gray-900 mb-2">
         {note.title}
       </h3>
 
-      {/* Description */}
-      {note.description && (
+  {note.description && (
         <p className="text-sm text-gray-600 mb-3 line-clamp-3">
           {note.description}
         </p>
       )}
 
-      {/* Image */}
-      {renderImage()}
+  {renderImage()}
 
-      {/* Footer */}
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
         <div className="flex items-center gap-2">
           <div className={`w-8 h-8 ${getAvatarColor(note.user.name)} rounded-full flex items-center justify-center`}>
             <span className="text-xs font-semibold text-white">

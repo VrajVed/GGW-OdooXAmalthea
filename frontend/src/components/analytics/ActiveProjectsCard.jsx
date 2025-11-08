@@ -41,10 +41,8 @@ function ActiveProjectsCard() {
         <p className="text-sm text-gray-500">This Month</p>
       </div>
 
-      {/* Graph */}
-      <div className="relative">
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 bottom-12 flex flex-col justify-between text-xs text-gray-500" style={{ width: '30px' }}>
+  <div className="relative">
+  <div className="absolute left-0 top-0 bottom-12 flex flex-col justify-between text-xs text-gray-500" style={{ width: '30px' }}>
           <span>100</span>
           <span>50</span>
           <span>25</span>
@@ -64,7 +62,7 @@ function ActiveProjectsCard() {
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  {/* Tooltip */}
+                  
                   {isHovered && (
                     <div 
                       className="absolute bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-20 whitespace-nowrap"
@@ -79,7 +77,7 @@ function ActiveProjectsCard() {
                     </div>
                   )}
                   
-                  {/* Vertical dashed line indicator */}
+                  
                   {isHovered && (
                     <div 
                       className="absolute bottom-0 w-px border-l border-dashed border-gray-400 z-10"
@@ -92,9 +90,7 @@ function ActiveProjectsCard() {
                     />
                   )}
 
-                  {/* Bar Container */}
                   <div className="w-full h-full flex items-end">
-                    {/* Bar */}
                     <div
                       className="w-full rounded-t transition-all duration-200 relative z-0"
                       style={{
@@ -109,7 +105,6 @@ function ActiveProjectsCard() {
             })}
           </div>
 
-          {/* X-axis labels */}
           <div className="flex justify-between mt-2 text-xs text-gray-500">
             {months.map((month, index) => (
               <span key={index} className="flex-1 text-center">

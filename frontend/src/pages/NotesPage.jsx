@@ -88,13 +88,12 @@ const notesData = [
 function NotesPage() {
   return (
     <div className="h-full bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 px-8 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6 flex-1">
             <h1 className="text-2xl font-semibold text-gray-900">Notes</h1>
             
-            {/* Search Bar */}
+            
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -109,9 +108,8 @@ function NotesPage() {
             </a>
           </div>
 
-          {/* Right Side */}
           <div className="flex items-center gap-4">
-            {/* User Profile */}
+            
             <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-lg px-3 py-2">
               <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">BF</span>
@@ -120,7 +118,6 @@ function NotesPage() {
               <ChevronDown className="w-4 h-4 text-gray-400" />
             </div>
 
-            {/* Action Buttons */}
             <button 
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg hover:bg-gray-50"
               style={{ border: '1.5px solid #714b67' }}
@@ -140,8 +137,7 @@ function NotesPage() {
         </div>
       </header>
 
-      {/* Notes Grid */}
-      <div className="p-8">
+  <div className="p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {notesData.map((note) => (
             <NoteCard key={note.id} note={note} />

@@ -8,7 +8,6 @@ function NotificationCard({ notification, getInitials, getAvatarColor }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
-        {/* Unread Indicator */}
         {!notification.isRead && (
           <div
             className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
@@ -16,31 +15,35 @@ function NotificationCard({ notification, getInitials, getAvatarColor }) {
           />
         )}
         {notification.isRead && <div className="w-2 flex-shrink-0" />}
-
-        {/* Avatar */}
         <div className={`w-10 h-10 ${getAvatarColor(notification.user.name)} rounded-full flex items-center justify-center flex-shrink-0`}>
           <span className="text-sm font-semibold text-white">
             {getInitials(notification.user.name)}
           </span>
         </div>
 
-        {/* Content */}
+        
+        
+        
+        
+        
         <div className="flex-1 min-w-0">
-          {/* Main Message */}
           <p className="text-sm text-gray-700 mb-2">
             <span className="font-semibold text-gray-900">{notification.user.name}</span>{' '}
             {notification.message}{' '}
             <span className="font-semibold text-gray-900">{notification.project}</span>
           </p>
-
-          {/* Quoted Comment */}
+          
+          
+          
+          
           {notification.quotedComment && (
             <div className="mb-3 pl-3 border-l-2 border-gray-300 bg-gray-50 rounded-r py-2">
               <p className="text-sm text-gray-600">{notification.quotedComment}</p>
             </div>
           )}
-
-          {/* Action Buttons */}
+          
+          
+          
           <div className="mb-2">
             {notification.action === 'reply' && (
               <>
@@ -73,7 +76,6 @@ function NotificationCard({ notification, getInitials, getAvatarColor }) {
                       </button>
                       <button
                         onClick={() => {
-                          // Handle send reply
                           setShowReplyBox(false)
                           setReplyText('')
                         }}
@@ -105,13 +107,15 @@ function NotificationCard({ notification, getInitials, getAvatarColor }) {
             )}
           </div>
 
-          {/* Metadata */}
           <p className="text-xs text-gray-500">
             {notification.time} | {notification.team}
           </p>
         </div>
-
-        {/* More Options */}
+        
+        
+        
+        
+        
         <button className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
           <MoreVertical className="w-4 h-4" />
         </button>
