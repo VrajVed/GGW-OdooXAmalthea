@@ -36,8 +36,7 @@ function ActiveCompaniesCard() {
         <p className="text-sm text-gray-500">This Years</p>
       </div>
 
-      {/* Progress Bars */}
-      <div className="space-y-3">
+  <div className="space-y-3">
         {departments.map((dept, index) => {
           const percentage = (dept.value / maxValue) * 100
           return (

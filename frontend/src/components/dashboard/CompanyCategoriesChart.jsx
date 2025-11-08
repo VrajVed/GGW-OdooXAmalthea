@@ -86,8 +86,7 @@ function CompanyCategoriesChart() {
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="mt-6 space-y-2">
+  <div className="mt-6 space-y-2">
         {paths.map((item, index) => {
           const isHovered = hoveredIndex === index
           const category = item.category

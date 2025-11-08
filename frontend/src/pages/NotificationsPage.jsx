@@ -81,7 +81,6 @@ function NotificationsPage() {
   return (
     <div className="h-full bg-gray-50">
       <div className="w-full bg-white min-h-full">
-        {/* Header */}
         <div className="border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-gray-900">Notifications</h1>
@@ -90,7 +89,6 @@ function NotificationsPage() {
             </button>
           </div>
 
-          {/* Tabs */}
           <div className="flex items-center gap-8 border-b border-gray-200">
             <button
               onClick={() => setActiveTab('all')}
@@ -155,7 +153,6 @@ function NotificationsPage() {
             </button>
           </div>
 
-          {/* Action Bar */}
           <div className="flex items-center justify-between mt-4">
             <button 
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors"
@@ -174,8 +171,7 @@ function NotificationsPage() {
           </div>
         </div>
 
-        {/* Notifications List */}
-        <div className="p-8">
+  <div className="p-8">
           <div className="space-y-4">
             {notificationsData[activeTab].map((notification) => (
               <NotificationCard

@@ -15,8 +15,7 @@ function CompletedProjectTargetCard() {
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h3 className="text-sm font-semibold text-gray-900 mb-6">Completed Project Target This Week</h3>
       
-      {/* Bar Chart */}
-      <div className="flex items-end justify-between gap-2 h-32">
+  <div className="flex items-end justify-between gap-2 h-32">
         {weekData.map((data, index) => {
           const targetHeight = (data.target / 100) * maxHeight
           const completedHeight = (data.completed / 100) * maxHeight
@@ -24,12 +23,10 @@ function CompletedProjectTargetCard() {
           return (
             <div key={index} className="flex-1 flex flex-col items-center">
               <div className="relative w-full flex flex-col items-center justify-end" style={{ height: `${maxHeight}px` }}>
-                {/* Target bar (gray background) */}
                 <div
                   className="w-full bg-gray-200 rounded-t"
                   style={{ height: `${targetHeight}px` }}
                 />
-                {/* Completed bar (black) */}
                 <div
                   className="absolute w-full bg-gray-900 rounded-t bottom-0"
                   style={{ height: `${completedHeight}px` }}

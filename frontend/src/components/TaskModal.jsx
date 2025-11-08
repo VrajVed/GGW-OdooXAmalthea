@@ -27,8 +27,7 @@ function TaskModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+  <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-900">Monthly Product Discussion</h2>
           <button
             onClick={onClose}
@@ -38,12 +37,10 @@ function TaskModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex">
-            {/* Left Section */}
             <div className="flex-1 p-6 border-r border-gray-200">
-              {/* Description */}
+              
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
                 <p className="text-sm text-gray-600">
@@ -51,7 +48,6 @@ function TaskModal({ isOpen, onClose }) {
                 </p>
               </div>
 
-              {/* Task Checklist */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -77,7 +73,6 @@ function TaskModal({ isOpen, onClose }) {
                 </button>
               </div>
 
-              {/* Daily Sprint */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -103,14 +98,12 @@ function TaskModal({ isOpen, onClose }) {
                 </button>
               </div>
 
-              {/* Add New Checklist */}
               <div className="mb-6">
                 <button className="w-full py-2 text-sm font-medium text-white rounded-lg hover:opacity-90 transition-opacity" style={{ backgroundColor: '#714b67' }}>
                   + Add New Checklist
                 </button>
               </div>
 
-              {/* Add Your Comment */}
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-900 mb-2">Add Your Comment</label>
                 <div className="relative">
@@ -130,7 +123,6 @@ function TaskModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Activity */}
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-gray-900">Activity</h3>
@@ -139,7 +131,7 @@ function TaskModal({ isOpen, onClose }) {
                   </button>
                 </div>
                 <div className="space-y-4">
-                  {/* Activity Entry 1 */}
+                  
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-semibold text-white">FE</span>
@@ -155,7 +147,7 @@ function TaskModal({ isOpen, onClose }) {
                     </button>
                   </div>
 
-                  {/* Activity Entry 2 */}
+                  
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-semibold text-white">JW</span>
@@ -174,9 +166,8 @@ function TaskModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* Right Section */}
             <div className="w-64 p-6 bg-gray-50">
-              {/* Member */}
+              
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">Member</h3>
                 <div className="flex items-center gap-2">
@@ -199,7 +190,6 @@ function TaskModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Due Date */}
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">Due Date</h3>
                 <div className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg">
@@ -211,7 +201,6 @@ function TaskModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Labels */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-900">Labels</h3>
@@ -229,7 +218,6 @@ function TaskModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Attachment */}
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-900">Attachment</h3>

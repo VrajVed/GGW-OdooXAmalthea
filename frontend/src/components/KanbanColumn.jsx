@@ -12,8 +12,7 @@ function KanbanColumn({ title, count, tasks, isCompleted = false }) {
   return (
     <div className="flex-shrink-0 w-80">
       <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
-        {/* Column Header */}
-        <div className="mb-4">
+  <div className="mb-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${getDotColor()}`}></div>
@@ -34,8 +33,7 @@ function KanbanColumn({ title, count, tasks, isCompleted = false }) {
           </button>
         </div>
 
-        {/* Task Cards */}
-        <div className="space-y-3">
+  <div className="space-y-3">
           {tasks.map((task) => (
             <TaskCard key={task.id} task={task} />
           ))}

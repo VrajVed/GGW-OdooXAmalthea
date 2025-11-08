@@ -30,15 +30,14 @@ function TasksListView({ tasks }) {
           className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-4">
-            {/* Checkbox */}
             <input type="checkbox" className="w-4 h-4 text-gray-600 border-gray-300 rounded flex-shrink-0" />
             
-            {/* Title */}
+            
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-semibold text-gray-900 truncate">{task.title}</h3>
             </div>
-
-            {/* Badges */}
+            
+            
             <div className="flex items-center gap-1.5 flex-shrink-0">
               {task.badges.map((badge) => (
                 <span
@@ -49,13 +48,13 @@ function TasksListView({ tasks }) {
                 </span>
               ))}
             </div>
-
-            {/* Due Date */}
+            
+            
             <div className="text-sm text-gray-700 whitespace-nowrap flex-shrink-0 w-24">
               {task.dueDate}
             </div>
-
-            {/* Progress */}
+            
+            
             <div className="flex items-center gap-2 flex-shrink-0 w-20">
               <div className="w-12 bg-gray-200 rounded-full h-1.5">
                 <div
@@ -68,7 +67,8 @@ function TasksListView({ tasks }) {
               </span>
             </div>
 
-            {/* Assigned Users */}
+            
+            
             <div className="flex items-center -space-x-2 flex-shrink-0">
               {task.assignedUsers.map((user, index) => (
                 <div
@@ -82,8 +82,8 @@ function TasksListView({ tasks }) {
                 </div>
               ))}
             </div>
-
-            {/* Engagement */}
+            
+            
             <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex items-center gap-1 text-xs text-gray-500">
                 <MessageCircle className="w-3.5 h-3.5" />
@@ -94,8 +94,7 @@ function TasksListView({ tasks }) {
                 <span>{task.likes}</span>
               </div>
             </div>
-
-            {/* More Options */}
+            
             <button className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
               <MoreVertical className="w-4 h-4" />
             </button>

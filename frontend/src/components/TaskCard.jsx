@@ -24,8 +24,7 @@ function TaskCard({ task }) {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer">
-      {/* Badges */}
-      <div className="flex flex-wrap gap-2 mb-3">
+  <div className="flex flex-wrap gap-2 mb-3">
         {task.badges.map((badge) => (
           <span
             key={badge}
@@ -36,20 +35,17 @@ function TaskCard({ task }) {
         ))}
       </div>
 
-      {/* Title */}
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">
+  <h3 className="text-sm font-semibold text-gray-900 mb-3">
         {task.title}
       </h3>
 
-      {/* Due Date */}
-      <div className="mb-3">
+  <div className="mb-3">
         <span className="text-xs text-gray-500">
           Due Date {task.dueDate}
         </span>
       </div>
 
-      {/* Progress */}
-      <div className="mb-4">
+  <div className="mb-4">
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs text-gray-600">
             {task.progress.current}/{task.progress.total}
@@ -66,9 +62,8 @@ function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        {/* Assigned Users */}
+        
         <div className="flex items-center -space-x-2">
           {task.assignedUsers.map((user, index) => (
             <div
@@ -83,7 +78,7 @@ function TaskCard({ task }) {
           ))}
         </div>
 
-        {/* Engagement */}
+        
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <MessageCircle className="w-3.5 h-3.5" />

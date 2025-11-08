@@ -66,7 +66,6 @@ function Navbar() {
     )
   }
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     if (!databaseOpen) return
 
@@ -77,7 +76,6 @@ function Navbar() {
       }
     }
 
-    // Use setTimeout to avoid immediate closure
     setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside)
     }, 0)
@@ -90,7 +88,6 @@ function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-3 sticky top-0 z-40">
       <div className="flex items-center justify-between max-w-full">
-        {/* Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#714b67' }}>
             <span className="text-white font-bold text-lg">V</span>
@@ -98,8 +95,7 @@ function Navbar() {
           <span className="text-xl font-semibold text-gray-900">Venture</span>
         </div>
 
-        {/* Navigation Items */}
-        <div className="flex items-center gap-1 flex-1 justify-center overflow-x-auto overflow-y-visible">
+  <div className="flex items-center gap-1 flex-1 justify-center overflow-x-auto overflow-y-visible">
           {navigationItems.map((item) => (
             <NavItem
               key={item.path}
@@ -108,7 +104,6 @@ function Navbar() {
             />
           ))}
 
-          {/* Database Dropdown */}
           <div className="relative database-dropdown" ref={dropdownRef} style={{ zIndex: 1000 }}>
             <button
               ref={buttonRef}
@@ -175,7 +170,6 @@ function Navbar() {
           ))}
         </div>
 
-        {/* Right Side - Team Selector */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer">
             <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">

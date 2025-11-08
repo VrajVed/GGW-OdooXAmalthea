@@ -22,7 +22,6 @@ function TasksTableView({ allTasks }) {
     return colors[index % colors.length]
   }
 
-  // Flatten all tasks from different columns
   const tasks = [
     ...allTasks.planned.map(t => ({ ...t, status: 'Planned' })),
     ...allTasks.upcoming.map(t => ({ ...t, status: 'Upcoming' })),
