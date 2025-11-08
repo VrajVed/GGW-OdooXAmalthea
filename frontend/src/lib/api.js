@@ -221,6 +221,13 @@ export const taskApi = {
     })
   },
 
+  // Get single task
+  getById: async (projectId, taskId) => {
+    return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
+      method: 'GET',
+    })
+  },
+
   // Create task
   create: async (projectId, taskData) => {
     return await apiCall(API_ENDPOINTS.tasks(projectId), {
@@ -234,6 +241,13 @@ export const taskApi = {
     return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
       method: 'PUT',
       body: JSON.stringify(taskData),
+    })
+  },
+
+  // Delete task
+  delete: async (projectId, taskId) => {
+    return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
+      method: 'DELETE',
     })
   },
 }

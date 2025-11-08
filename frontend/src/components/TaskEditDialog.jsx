@@ -21,6 +21,8 @@ function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
     deadline: '',
     coverImage: null,
     assignee: '',
+    state: 'new',
+    priority: 'medium',
   })
   const [newTag, setNewTag] = useState('')
   const [timesheets, setTimesheets] = useState([])
@@ -41,6 +43,8 @@ function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
         deadline: task.deadline || '',
         coverImage: task.coverImage || null,
         assignee: task.assignee || '',
+        state: task.state || 'new',
+        priority: task.priority || 'medium',
       })
       setTimesheets(task.timesheets || [])
     }
@@ -299,6 +303,40 @@ function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* State */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="new">New</option>
+                <option value="in_progress">In Progress</option>
+                <option value="blocked">Blocked</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+
+            {/* Priority */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Priority
+              </label>
+              <select
+                value={formData.priority}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
             </div>
 
             {/* Deadline */}

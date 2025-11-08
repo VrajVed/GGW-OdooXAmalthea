@@ -1,7 +1,7 @@
 import { X, Plus, Edit2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
-function ProjectTasksDialog({ project, isOpen, onClose, onAddTask, onEditTask }) {
+function ProjectTasksDialog({ project, isOpen, onClose, onAddTask, onEditTask, onDeleteTask }) {
   if (!isOpen || !project) return null
 
   return (
@@ -50,7 +50,7 @@ function ProjectTasksDialog({ project, isOpen, onClose, onAddTask, onEditTask })
                     <p className="text-xs text-gray-600 mt-1">{task.description}</p>
                     {task.deadline && (
                       <span className="text-xs text-gray-500 mt-1 inline-block">
-                        Due: {task.deadline}
+                        Due: {new Date(task.deadline).toLocaleDateString()}
                       </span>
                     )}
                   </div>
@@ -62,6 +62,15 @@ function ProjectTasksDialog({ project, isOpen, onClose, onAddTask, onEditTask })
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
+                    {onDeleteTask && (
+                      <button
+                        onClick={() => onDeleteTask(task.id, project.projectId)}
+                        className="p-2 text-red-600 hover:text-red-900 hover:bg-red-100 rounded transition-colors"
+                        title="Delete Task"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))

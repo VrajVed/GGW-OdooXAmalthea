@@ -177,46 +177,86 @@ function TasksPage() {
       )
       const tasksResponses = await Promise.all(tasksPromises)
 
-      // 3. Organize tasks by state
+      // 3. Organize tasks by state - Group by project
       const organized = { new: [], inProgress: [], done: [] }
+      
+      // Create a map to track projects by state
+      const projectsByState = {
+        new: new Map(),
+        inProgress: new Map(),
+        done: new Map()
+      }
       
       projectsList.forEach((project, index) => {
         const tasksResponse = tasksResponses[index]
         const projectTasks = tasksResponse.success ? tasksResponse.data : []
 
+        // Group tasks by their state
+        const tasksByState = {
+          new: [],
+          inProgress: [],
+          done: []
+        }
+
         projectTasks.forEach(task => {
-          // Create task card data
-          const taskCard = {
-            id: task.id,
-            title: project.name,
-            description: project.description,
-            project: project.name,
-            badges: task.labels || [],
-            dueDate: task.due_date || '',
-            tasks: 0,
-            assignedUsers: [{ name: "User", initials: "U" }],
-            taskList: [{
-              id: task.id,
-              title: task.title,
-              description: task.description,
-              deadline: task.due_date,
-              tags: task.labels || [],
-              assignee: "User",
-              created: task.created_at,
-              timesheets: [],
-              changeHistory: []
-            }],
-            projectId: project.id,
-            projectData: project
+          const taskData = {
+            id: task.id, // This is the UUID from database
+            title: task.title,
+            description: task.description,
+            deadline: task.due_date,
+            tags: task.labels || [],
+            assignee: "User",
+            created: task.created_at,
+            state: task.state,
+            priority: task.priority,
+            timesheets: [],
+            changeHistory: []
           }
 
-          // Sort into columns by state
+          // Add task to appropriate state group
           if (task.state === 'new') {
-            organized.new.push(taskCard)
+            tasksByState.new.push(taskData)
           } else if (task.state === 'in_progress' || task.state === 'blocked') {
-            organized.inProgress.push(taskCard)
+            tasksByState.inProgress.push(taskData)
           } else if (task.state === 'done') {
-            organized.done.push(taskCard)
+            tasksByState.done.push(taskData)
+          }
+        })
+
+        // Create project cards for each state that has tasks
+        Object.keys(tasksByState).forEach(state => {
+          if (tasksByState[state].length > 0) {
+            // Get all unique labels from tasks
+            const allLabels = [...new Set(tasksByState[state].flatMap(t => t.tags || []))]
+            
+            // Get earliest and latest dates
+            const dates = tasksByState[state]
+              .map(t => t.deadline)
+              .filter(d => d)
+              .map(d => new Date(d))
+            
+            const minDate = dates.length > 0 ? new Date(Math.min(...dates)) : null
+            const maxDate = dates.length > 0 ? new Date(Math.max(...dates)) : null
+            
+            const dateRange = minDate && maxDate 
+              ? `${minDate.toLocaleDateString()} • ${maxDate.toLocaleDateString()}`
+              : ''
+
+            const projectCard = {
+              id: `${project.id}-${state}`, // Unique ID for each project-state combination
+              title: project.name,
+              description: project.description,
+              project: project.name,
+              badges: allLabels,
+              dueDate: dateRange,
+              tasks: tasksByState[state].length,
+              assignedUsers: [{ name: "User", initials: "U" }],
+              taskList: tasksByState[state],
+              projectId: project.id,
+              projectData: project
+            }
+
+            organized[state].push(projectCard)
           }
         })
       })
@@ -284,9 +324,15 @@ function TasksPage() {
         return
       }
 
-      // Prepare task data
+      // Validate title
+      if (!updatedTask.title || updatedTask.title.trim().length === 0) {
+        alert('Task title is required')
+        return
+      }
+
+      // Prepare task data - use the state and priority from the form
       const taskData = {
-        title: updatedTask.title,
+        title: updatedTask.title.trim(),
         description: updatedTask.description || '',
         state: updatedTask.state || 'new',
         priority: updatedTask.priority || 'medium',
@@ -294,17 +340,31 @@ function TasksPage() {
         labels: updatedTask.tags || [],
       }
 
-      // Check if updating (UUID) or creating (temporary ID)
-      const isExisting = updatedTask.id && typeof updatedTask.id === 'string' && updatedTask.id.includes('-')
+      // Check if updating (UUID format: has dashes and is 36 chars) or creating (numeric timestamp)
+      const taskIdStr = String(updatedTask.id)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskIdStr)
+      
+      console.log('Saving task:', { 
+        taskId: updatedTask.id, 
+        taskIdStr, 
+        isUUID, 
+        projectId,
+        taskData 
+      })
       
       let response
-      if (isExisting) {
+      if (isUUID) {
+        // Update existing task
+        console.log('Updating existing task:', updatedTask.id)
         response = await taskApi.update(projectId, updatedTask.id, taskData)
       } else {
+        // Create new task
+        console.log('Creating new task')
         response = await taskApi.create(projectId, taskData)
       }
 
       if (response.success) {
+        console.log('Task saved successfully:', response.data)
         await loadData() // Reload to show changes
         setIsTaskEditDialogOpen(false)
         setEditingTask(null)
@@ -322,10 +382,28 @@ function TasksPage() {
     setEditingTask(null)
   }
 
+  const handleDeleteTask = async (taskId, projectId) => {
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return
+    }
+
+    try {
+      const response = await taskApi.delete(projectId, taskId)
+      if (response.success) {
+        await loadData() // Reload to show changes
+      } else {
+        alert('Failed to delete task: ' + response.message)
+      }
+    } catch (err) {
+      console.error('Error deleting task:', err)
+      alert('Error deleting task: ' + err.message)
+    }
+  }
+
   const handleNewTask = () => {
     // Create a new empty task (not tied to a specific project initially)
     const newTask = {
-      id: Date.now(),
+      id: Date.now(), // Temporary numeric ID
       title: '',
       description: '',
       deadline: '',
@@ -358,6 +436,7 @@ function TasksPage() {
         onClose={handleCloseProjectDialog}
         onAddTask={handleAddTask}
         onEditTask={handleEditTask}
+        onDeleteTask={handleDeleteTask}
       />
 
       <TaskEditDialog
