@@ -1,0 +1,11 @@
+# Ignore all markdown files
+*.md
+**/*.md
+
+# But do not ignore any README.md files (root or in subdirectories)
+!README.md
+!**/README.md
+
+# Keep node_modules and other common ignores (optional)
+node_modules/
+/.env
