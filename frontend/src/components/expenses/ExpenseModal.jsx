@@ -8,8 +8,9 @@ const CATEGORIES = [
   'Software', 'Hardware', 'Training', 'Marketing', 'Other'
 ]
 
-export default function ExpenseModal({ expense, projects, onClose, onSave }) {
+export default function ExpenseModal({ expense, projects, users, onClose, onSave }) {
   const [formData, setFormData] = useState({
+    user_id: expense?.userId || '',
     project_id: expense?.projectId || '',
     category: expense?.category || '',
     amount: expense?.amount || '',
@@ -88,6 +89,7 @@ export default function ExpenseModal({ expense, projects, onClose, onSave }) {
     
     // Validation
     const newErrors = {}
+    if (!formData.user_id) newErrors.user_id = 'Employee is required'
     if (!formData.category) newErrors.category = 'Category is required'
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = 'Valid amount is required'
     if (!formData.spent_on) newErrors.spent_on = 'Expense date is required'
@@ -197,6 +199,29 @@ export default function ExpenseModal({ expense, projects, onClose, onSave }) {
                   <option key={project.id} value={project.id}>{project.name}</option>
                 ))}
               </select>
+            </div>
+
+            {/* Employee */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Employee <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="user_id"
+                value={formData.user_id}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  errors.user_id ? 'border-red-300' : 'border-gray-300'
+                }`}
+              >
+                <option value="">Select employee...</option>
+                {users && users.map(user => (
+                  <option key={user.id} value={user.id}>{user.full_name}</option>
+                ))}
+              </select>
+              {errors.user_id && (
+                <p className="mt-1 text-xs text-red-600">{errors.user_id}</p>
+              )}
             </div>
 
             {/* Category */}

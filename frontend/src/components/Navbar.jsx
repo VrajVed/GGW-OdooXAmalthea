@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   LayoutDashboard, 
   Bell, 
@@ -15,6 +15,8 @@ import {
   Receipt
 } from 'lucide-react'
 import { cn } from '../lib/utils'
+import { removeUser } from '../lib/api'
+import logo from '../images/logo.png'
 
 const navigationItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -37,6 +39,7 @@ const otherItems = [
 
 function Navbar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [databaseOpen, setDatabaseOpen] = useState(false)
   const dropdownRef = useRef(null)
   const buttonRef = useRef(null)
@@ -44,6 +47,11 @@ function Navbar() {
   const isActive = (path) => {
     const full = `/app${path}`
     return location.pathname === full
+  }
+
+  const handleLogoClick = () => {
+    removeUser()
+    navigate('/')
   }
 
   const NavItem = ({ item, isActive: active }) => {
@@ -87,13 +95,16 @@ function Navbar() {
     <nav className="bg-white border-b border-gray-200 px-6 py-3 sticky top-0 z-40">
       <div className="flex items-center justify-between max-w-full">
         <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#714b67' }}>
-            <span className="text-white font-bold text-lg">O</span>
-          </div>
-          <span className="text-xl font-semibold text-gray-900">OneFlow</span>
+          <img 
+            src={logo} 
+            alt="OneFlow Logo" 
+            className="h-20 w-auto cursor-pointer" 
+            onClick={handleLogoClick}
+            title="Logout"
+          />
         </div>
 
-  <div className="flex items-center gap-1 flex-1 justify-center overflow-x-auto overflow-y-visible">
+        <div className="flex items-center gap-1 flex-1 justify-center overflow-x-auto overflow-y-visible">
           {navigationItems.map((item) => (
             <NavItem
               key={item.path}

@@ -212,18 +212,28 @@ export const expensesApi = {
   },
 }
 
+// User API functions
+export const userApi = {
+  // Get all users
+  getAll: async () => {
+    return await apiCall(API_ENDPOINTS.users, {
+      method: 'GET',
+    })
+  },
+
+  // Get single user
+  getByEmail: async (email) => {
+    return await apiCall(`${API_ENDPOINTS.users}/${email}`, {
+      method: 'GET',
+    })
+  },
+}
+
 // Task API functions
 export const taskApi = {
   // Get all tasks for a project
   getAll: async (projectId) => {
     return await apiCall(API_ENDPOINTS.tasks(projectId), {
-      method: 'GET',
-    })
-  },
-
-  // Get single task
-  getById: async (projectId, taskId) => {
-    return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
       method: 'GET',
     })
   },
@@ -241,13 +251,6 @@ export const taskApi = {
     return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
       method: 'PUT',
       body: JSON.stringify(taskData),
-    })
-  },
-
-  // Delete task
-  delete: async (projectId, taskId) => {
-    return await apiCall(`${API_ENDPOINTS.tasks(projectId)}/${taskId}`, {
-      method: 'DELETE',
     })
   },
 }
