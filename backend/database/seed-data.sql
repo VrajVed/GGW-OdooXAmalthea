@@ -116,6 +116,11 @@ VALUES
   )
 ON CONFLICT DO NOTHING;
 
+-- Update all projects with default budget
+UPDATE project.projects
+SET budget_amount = 50000
+WHERE org_id = '00000000-0000-0000-0000-000000000001'::uuid;
+
 -- Create user rates for admin user
 INSERT INTO project.user_rates (
   org_id, user_id, bill_rate, cost_rate, currency, valid_from
