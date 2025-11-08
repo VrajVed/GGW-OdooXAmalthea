@@ -1,0 +1,21 @@
+{
+  "file": "5.jpeg",
+  "timestamp": null,
+  "extracted_data": {
+    "amount": 30.0,
+    "currency": null,
+    "date": "2018-02-04",
+    "vendor": "McDonald's Family Restaurant",
+    "category": "Restaurant",
+    "subtotal": 28.58,
+    "tax_amount": 1.42
+  },
+  "raw_text": null,
+  "metadata": {
+    "merchant_address": null,
+    "transaction_time": "16:10",
+    "line_items": [],
+    "extraction_method": "llm_receipt_ocr",
+    "model_used": "gemini-2.0-flash-exp"
+  }
+}
