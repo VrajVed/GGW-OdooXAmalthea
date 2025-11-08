@@ -70,3 +70,57 @@
   }
 }
 
+/* FullCalendar Basic Styles */
+.fc {
+  font-family: inherit;
+}
+
+.fc-header-toolbar {
+  margin-bottom: 1.5em;
+}
+
+.fc-button {
+  @apply bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50;
+}
+
+.fc-button-primary:not(:disabled):active,
+.fc-button-primary:not(:disabled).fc-button-active {
+  @apply bg-gray-100 text-gray-900;
+}
+
+.fc-daygrid-day-frame {
+  @apply border border-gray-200;
+}
+
+.fc-day-today {
+  @apply bg-blue-50;
+}
+
+.fc-event {
+  @apply border-none rounded px-1 py-0.5 text-xs cursor-pointer;
+}
+
+.fc-event-title {
+  @apply font-medium;
+}
+
+.fc-daygrid-event {
+  @apply rounded px-2 py-1;
+}
+
+.fc-timegrid-event {
+  @apply rounded px-2 py-1;
+}
+
+.fc-col-header-cell {
+  @apply border-b border-gray-200 p-2;
+}
+
+.fc-daygrid-day-number {
+  @apply p-2;
+}
+
+.fc-toolbar-title {
+  @apply text-xl font-semibold text-gray-900;
+}
+
