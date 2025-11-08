@@ -80,17 +80,21 @@ router.post('/register', async (req, res) => {
         // Using parameterized query to prevent SQL injection
         // ========================================
         const insertQuery = `
-            INSERT INTO users (first_name, last_name, work_email, role, password_hash)
+            INSERT INTO auth.users (org_id, full_name, email, password_hash, is_active)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING work_email, first_name, last_name, role, created_at
+            RETURNING id, email, full_name, is_active, created_at
         `;
         
+        // Use default org_id from seed data
+        const defaultOrgId = '00000000-0000-0000-0000-000000000001';
+        const fullName = `${firstName.trim()} ${lastName.trim()}`;
+        
         const values = [
-            firstName.trim(),
-            lastName.trim(),
+            defaultOrgId,
+            fullName,
             workEmail.toLowerCase().trim(),  // Normalize email to lowercase
-            userRole,
-            passwordHash
+            passwordHash,
+            true  // is_active
         ];
         
         const result = await query(insertQuery, values);
@@ -158,9 +162,9 @@ router.post('/login', async (req, res) => {
         
         // Fetch user from database
         const selectQuery = `
-            SELECT work_email, first_name, last_name, role, password_hash, is_active
-            FROM users
-            WHERE work_email = $1
+            SELECT id, org_id, email, full_name, password_hash, is_active
+            FROM auth.users
+            WHERE email = $1
         `;
         
         const result = await query(selectQuery, [workEmail.toLowerCase().trim()]);
@@ -195,8 +199,8 @@ router.post('/login', async (req, res) => {
         
         // Update last login timestamp
         await query(
-            'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE work_email = $1',
-            [user.work_email]
+            'UPDATE auth.users SET updated_at = CURRENT_TIMESTAMP WHERE email = $1',
+            [user.email]
         );
         
         // Successful login - return user data (excluding password)
@@ -234,8 +238,8 @@ router.get('/', async (req, res) => {
     try {
         // Using the safe view that excludes passwords
         const selectQuery = `
-            SELECT work_email, first_name, last_name, role, created_at, last_login, is_active
-            FROM users
+            SELECT id, org_id, email, full_name, is_active, created_at, updated_at
+            FROM auth.users
             ORDER BY created_at DESC
         `;
         
@@ -269,9 +273,9 @@ router.get('/:email', async (req, res) => {
         const { email } = req.params;
         
         const selectQuery = `
-            SELECT work_email, first_name, last_name, role, created_at, last_login, is_active
-            FROM users
-            WHERE work_email = $1
+            SELECT id, org_id, email, full_name, is_active, created_at, updated_at
+            FROM auth.users
+            WHERE email = $1
         `;
         
         const result = await query(selectQuery, [email.toLowerCase()]);
@@ -308,33 +312,21 @@ router.get('/:email', async (req, res) => {
 router.put('/:email', async (req, res) => {
     try {
         const { email } = req.params;
-        const { firstName, lastName, role } = req.body;
+        const { fullName, isActive } = req.body;
         
         // Build dynamic update query
         const updates = [];
         const values = [];
         let paramCount = 1;
         
-        if (firstName) {
-            updates.push(`first_name = $${paramCount++}`);
-            values.push(firstName.trim());
+        if (fullName) {
+            updates.push(`full_name = $${paramCount++}`);
+            values.push(fullName.trim());
         }
         
-        if (lastName) {
-            updates.push(`last_name = $${paramCount++}`);
-            values.push(lastName.trim());
-        }
-        
-        if (role) {
-            const validRoles = ['admin', 'manager', 'user', 'guest'];
-            if (!validRoles.includes(role)) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Invalid role. Must be one of: ${validRoles.join(', ')}`
-                });
-            }
-            updates.push(`role = $${paramCount++}`);
-            values.push(role);
+        if (typeof isActive === 'boolean') {
+            updates.push(`is_active = $${paramCount++}`);
+            values.push(isActive);
         }
         
         if (updates.length === 0) {
@@ -347,10 +339,10 @@ router.put('/:email', async (req, res) => {
         values.push(email.toLowerCase());
         
         const updateQuery = `
-            UPDATE users
-            SET ${updates.join(', ')}
-            WHERE work_email = $${paramCount}
-            RETURNING work_email, first_name, last_name, role, updated_at
+            UPDATE auth.users
+            SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP
+            WHERE email = $${paramCount}
+            RETURNING id, email, full_name, is_active, updated_at
         `;
         
         const result = await query(updateQuery, values);
@@ -391,10 +383,10 @@ router.delete('/:email', async (req, res) => {
         
         // Soft delete - just mark as inactive
         const updateQuery = `
-            UPDATE users
-            SET is_active = FALSE
-            WHERE work_email = $1
-            RETURNING work_email
+            UPDATE auth.users
+            SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+            WHERE email = $1
+            RETURNING email
         `;
         
         const result = await query(updateQuery, [email.toLowerCase()]);
