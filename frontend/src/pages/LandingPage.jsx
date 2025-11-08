@@ -7,7 +7,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-8">
       <div className="max-w-4xl text-center">
-  <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">From Planning to Payout Seamlessly</h1>
+        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">From Planning to Payout Seamlessly</h1>
         <p className="text-lg text-gray-600 mb-8">Track pipelines, close more deals, and nurture long-term growth.</p>
 
         <div className="flex items-center justify-center gap-4">

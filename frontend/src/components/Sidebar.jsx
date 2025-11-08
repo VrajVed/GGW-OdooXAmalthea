@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   LayoutDashboard, 
   Bell, 
@@ -13,6 +13,8 @@ import {
   Settings
 } from 'lucide-react'
 import { cn } from '../lib/utils'
+import { removeUser } from '../lib/api'
+import logo from '../images/logo.png'
 
 const navigationItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -36,10 +38,16 @@ const otherItems = [
 
 function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isActive = (path) => {
     const full = `/app${path}`
     return location.pathname === full
+  }
+
+  const handleLogoClick = () => {
+    removeUser()
+    navigate('/')
   }
 
   const NavItem = ({ item, isActive: active }) => {
@@ -62,16 +70,19 @@ function Sidebar() {
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
-  <div className="px-6 py-6 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#714b67' }}>
-            <span className="text-white font-bold text-lg">O</span>
-          </div>
-          <span className="text-xl font-semibold text-gray-900">OneFlow</span>
+      <div className="px-6 py-6 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <img 
+            src={logo} 
+            alt="OneFlow Logo" 
+            className="h-32 w-auto cursor-pointer" 
+            onClick={handleLogoClick}
+            title="Logout"
+          />
         </div>
       </div>
 
-  <nav className="flex-1 px-4 py-6 space-y-1">
+      <nav className="flex-1 px-4 py-6 space-y-1">
         {navigationItems.map((item) => (
           <NavItem
             key={item.path}
