@@ -105,7 +105,7 @@ const DashboardPage = () => {
   }
 
   const handleProjectClick = (projectId) => {
-    navigate(`/app/projects`)
+    navigate('/app/projects')
   }
 
   // KPI configuration
