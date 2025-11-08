@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, Plus, Receipt } from 'lucide-react'
-import { expensesApi, projectApi } from '../lib/api'
+import { expensesApi, projectApi, userApi } from '../lib/api'
 import ExpensesTable from '../components/expenses/ExpensesTable'
 import ExpenseFilters from '../components/expenses/ExpenseFilters'
 import ExpenseBulkActions from '../components/expenses/ExpenseBulkActions'
@@ -11,6 +11,7 @@ import AddToInvoiceModal from '../components/expenses/AddToInvoiceModal'
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState([])
   const [projects, setProjects] = useState([])
+  const [users, setUsers] = useState([])
   const [stats, setStats] = useState({
     pendingApprovals: 0,
     pendingAmount: 0,
@@ -50,6 +51,12 @@ export default function ExpensesPage() {
       const projectsResult = await projectApi.getAll()
       if (projectsResult.success) {
         setProjects(projectsResult.data)
+      }
+
+      // Load users
+      const usersResult = await userApi.getAll()
+      if (usersResult.success) {
+        setUsers(usersResult.data.users)
       }
 
       // Load expenses
@@ -282,19 +289,19 @@ export default function ExpensesPage() {
 
         {/* Stats Widgets */}
         <div className="grid grid-cols-4 gap-4 mb-4">
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-sm text-gray-600 mb-1">Pending Approvals</div>
             <div className="text-2xl font-semibold" style={{ color: '#714b67' }}>{stats.pendingApprovals}</div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-sm text-gray-600 mb-1">₹ Pending</div>
             <div className="text-2xl font-semibold text-gray-900">{formatCurrency(stats.pendingAmount)}</div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-sm text-gray-600 mb-1">₹ Pending (Billable)</div>
             <div className="text-2xl font-semibold text-gray-900">{formatCurrency(stats.pendingBillableAmount)}</div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer">
             <div className="text-sm text-gray-600 mb-1">Missing Receipts</div>
             <div className="text-2xl font-semibold text-gray-900">{stats.missingReceipts}</div>
           </div>
@@ -472,6 +479,7 @@ export default function ExpensesPage() {
         <ExpenseModal
           expense={editExpense}
           projects={projects}
+          users={users}
           onClose={() => {
             setShowModal(false)
             setEditExpense(null)
