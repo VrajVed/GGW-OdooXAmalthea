@@ -9,6 +9,10 @@ export const API_ENDPOINTS = {
   tasks: (projectId) => `/api/projects/${projectId}/tasks`,
   expenses: '/api/expenses',
   timesheets: '/api/timesheets',
+  dashboard: {
+    stats: '/api/dashboard/stats',
+    projects: '/api/dashboard/projects'
+  }
 }
 
 // Helper function for API calls
@@ -352,6 +356,28 @@ export const timesheetsApi = {
     }
     const queryString = queryParams.toString()
     return await apiCall(`${API_ENDPOINTS.timesheets}/user-rates/${userId}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+}
+
+// Dashboard API functions
+export const dashboardApi = {
+  // Get dashboard statistics (KPIs)
+  getStats: async () => {
+    return await apiCall(API_ENDPOINTS.dashboard.stats, {
+      method: 'GET',
+    })
+  },
+
+  // Get dashboard projects with optional filter
+  getProjects: async (statusFilter = null) => {
+    const queryParams = new URLSearchParams()
+    if (statusFilter) {
+      queryParams.append('status', statusFilter)
+    }
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.dashboard.projects}${queryString ? '?' + queryString : ''}`, {
       method: 'GET',
     })
   },
