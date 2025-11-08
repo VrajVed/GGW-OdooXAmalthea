@@ -81,15 +81,16 @@ export default function ProjectModal({ project, onClose, onCreate, onUpdate }){
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="absolute inset-0 bg-black opacity-30" onClick={onClose}></div>
-      <form onSubmit={submit} className="relative bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 z-10">
-        <div className="flex items-center justify-between mb-4">
+      <form onSubmit={submit} className="relative bg-white rounded-lg shadow-lg w-full max-w-2xl z-10 my-8 flex flex-col max-h-[95vh]">
+        <div className="flex items-center justify-between p-6 pb-4 border-b bg-white rounded-t-lg sticky top-0 z-10">
           <h3 className="text-lg font-semibold">{project ? 'Edit Project' : 'New Project'}</h3>
           <button type="button" onClick={onClose}><X className="w-5 h-5 text-gray-600" /></button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="p-6 overflow-y-auto flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className="block text-sm text-gray-700">Name</label>
             <input required value={form.name} onChange={e=>setForm(f=>({...f, name:e.target.value}))} className="mt-1 w-full border rounded px-3 py-2" />
@@ -179,11 +180,14 @@ export default function ProjectModal({ project, onClose, onCreate, onUpdate }){
               <p className="mt-2 text-sm text-gray-500">Uploading image...</p>
             )}
           </div>
+          </div>
         </div>
 
-        <div className="mt-5 flex justify-end gap-3">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-white border">Cancel</button>
-          <button type="submit" className="px-4 py-2 rounded text-white" style={{ backgroundColor: '#714b67' }}>{project ? 'Save' : 'Create'}</button>
+        <div className="p-6 pt-4 border-t bg-white rounded-b-lg sticky bottom-0 z-10">
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-white border hover:bg-gray-50 transition-colors">Cancel</button>
+            <button type="submit" className="px-4 py-2 rounded text-white hover:opacity-90 transition-opacity" style={{ backgroundColor: '#714b67' }}>{project ? 'Save' : 'Create'}</button>
+          </div>
         </div>
       </form>
     </div>

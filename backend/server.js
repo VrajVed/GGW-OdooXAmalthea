@@ -29,6 +29,7 @@ const uploadRoutes = require('./routes/upload');
 const taskRoutes = require('./routes/tasks');
 const expenseRoutes = require('./routes/expenses');
 const timesheetRoutes = require('./routes/timesheets');
+const dashboardRoutes = require('./routes/dashboard');
 
 // Initialize Express app
 const app = express();
@@ -116,6 +117,9 @@ app.get('/api', (req, res) => {
 
 // User routes
 app.use('/api/users', userRoutes);
+
+// Dashboard routes
+app.use('/api/dashboard', dashboardRoutes);
 
 // Project routes
 app.use('/api/projects', projectRoutes);
