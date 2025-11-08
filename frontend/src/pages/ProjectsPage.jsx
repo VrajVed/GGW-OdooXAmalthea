@@ -1,19 +1,19 @@
 import { useState, useMemo, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Search, Plus, ChevronDown } from 'lucide-react'
 import ProjectCard from '../components/ProjectCard'
 import ProjectModal from '../components/ProjectModal'
-import ProjectDetails from '../components/ProjectDetails'
 import { projectApi } from '../lib/api'
 
 const STATUSES = ['New','In Progress','Completed']
 
 function ProjectsPage() {
+  const navigate = useNavigate()
   const [projects, setProjects] = useState([])
   const [query, setQuery] = useState('')
   const [sortBy, setSortBy] = useState('Newest')
   const [modalOpen, setModalOpen] = useState(false)
   const [editProject, setEditProject] = useState(null)
-  const [selectedProject, setSelectedProject] = useState(null)
   const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -98,7 +98,7 @@ function ProjectsPage() {
       if (response.success) {
         // Refresh projects from server
         await fetchProjects()
-        setSelectedProject(null)
+        setSelectedProjectId(null)
         setToast('Project deleted successfully')
         setTimeout(() => setToast(null), 2000)
       } else {
@@ -210,7 +210,7 @@ function ProjectsPage() {
                         project={p}
                         onEdit={() => { setEditProject(p); setModalOpen(true) }}
                         onDelete={() => handleDelete(p.id)}
-                        onOpen={() => setSelectedProject(p)}
+                        onOpen={() => navigate(`/app/projects/${p.id}`)}
                       />
                     ))}
                   </div>
@@ -227,15 +227,6 @@ function ProjectsPage() {
           onClose={() => setModalOpen(false)}
           onCreate={handleCreate}
           onUpdate={handleEdit}
-        />
-      )}
-
-      {selectedProject && (
-        <ProjectDetails
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-          onEdit={(p) => { setEditProject(p); setModalOpen(true); setSelectedProject(null) }}
-          onDelete={(id) => handleDelete(id)}
         />
       )}
 
