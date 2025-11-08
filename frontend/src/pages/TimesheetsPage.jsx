@@ -29,7 +29,6 @@ export default function TimesheetsPage() {
   const [editTimesheet, setEditTimesheet] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const pollingIntervalRef = useRef(null)
 
   function getDate90DaysAgo() {
     const date = new Date()
@@ -37,21 +36,7 @@ export default function TimesheetsPage() {
     return date.toISOString().split('T')[0]
   }
 
-  useEffect(() => {
-    loadData()
-    
-    // Set up real-time polling every 5 seconds
-    pollingIntervalRef.current = setInterval(() => {
-      loadData()
-    }, 5000)
-
-    return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current)
-      }
-    }
-  }, [filters])
-
+  
   const loadData = async () => {
     try {
       setLoading(true)
@@ -83,6 +68,12 @@ export default function TimesheetsPage() {
       setLoading(false)
     }
   }
+
+
+  useEffect(() => {
+    loadData()
+  }, [filters])
+
 
   const handleFilterChange = (newFilters) => {
     if (Object.keys(newFilters).length === 0) {
