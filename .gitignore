@@ -1,6 +1,8 @@
 # Ignore all markdown files
 *.md
 **/*.md
+*.pdf 
+*.png
 
 # But do not ignore any README.md files (root or in subdirectories)
 !README.md

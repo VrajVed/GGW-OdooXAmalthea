@@ -27,6 +27,7 @@ const userRoutes = require('./routes/users');
 const projectRoutes = require('./routes/projects');
 const uploadRoutes = require('./routes/upload');
 const taskRoutes = require('./routes/tasks');
+const expenseRoutes = require('./routes/expenses');
 
 // Initialize Express app
 const app = express();
@@ -40,8 +41,29 @@ app.use(helmet());
 
 // CORS configuration - adjust for your frontend domain in production
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'http://localhost:5173'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // In development, allow any localhost port
+        if (process.env.NODE_ENV !== 'production') {
+            if (origin.match(/^http:\/\/localhost:\d+$/) || origin.match(/^http:\/\/127\.0\.0\.1:\d+$/)) {
+                return callback(null, true);
+            }
+        }
+        
+        // In production, use specific allowed origins
+        const allowedOrigins = process.env.FRONTEND_URL 
+            ? (Array.isArray(process.env.FRONTEND_URL) ? process.env.FRONTEND_URL : [process.env.FRONTEND_URL])
+            : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'];
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
     maxAge: 86400  // 24 hours
@@ -103,6 +125,9 @@ app.use('/api/projects/:id/tasks', taskRoutes);
 
 // Upload routes
 app.use('/api/upload', uploadRoutes);
+
+// Expense routes
+app.use('/api/expenses', expenseRoutes);
 
 // ============================================================================
 // Error Handling Middleware

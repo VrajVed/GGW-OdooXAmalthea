@@ -65,9 +65,9 @@ function Sidebar() {
   <div className="px-6 py-6 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#714b67' }}>
-            <span className="text-white font-bold text-lg">V</span>
+            <span className="text-white font-bold text-lg">O</span>
           </div>
-          <span className="text-xl font-semibold text-gray-900">Venture</span>
+          <span className="text-xl font-semibold text-gray-900">OneFlow</span>
         </div>
       </div>
 
