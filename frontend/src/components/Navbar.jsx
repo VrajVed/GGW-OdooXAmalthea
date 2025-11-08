@@ -5,6 +5,7 @@ import {
   Bell, 
   FileText, 
   CheckSquare, 
+  Calendar,
   BarChart3,
   Clock,
   Users,
@@ -23,6 +24,7 @@ const navigationItems = [
   { icon: FileText, label: 'Projects', path: '/projects' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
   { icon: Receipt, label: 'Expenses', path: '/expenses' },
+  { icon: Calendar, label: 'Calendar', path: '/calendars' },
   { icon: Clock, label: 'Timesheets', path: '/timesheets' },
 ]
 
@@ -144,7 +146,7 @@ function Navbar() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer">
               <div className="w-9 h-9 bg-[#714b67] rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">{getInitials(user?.full_name)}</span>
               </div>

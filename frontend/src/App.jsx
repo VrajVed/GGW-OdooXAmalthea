@@ -18,6 +18,7 @@ import SalesOrdersPage from './pages/SalesOrdersPage'
 import PurchaseOrdersPage from './pages/PurchaseOrdersPage'
 import CustomerInvoicesPage from './pages/CustomerInvoicesPage'
 import VendorBillsPage from './pages/VendorBillsPage'
+import CalendarPage from './pages/CalendarPage'
 
 // Employee Pages
 import EmployeeDashboardPage from './pages/employee/EmployeeDashboardPage'
@@ -50,7 +51,7 @@ function App() {
           <Route path="expenses" element={<ExpensesPage />} />
           <Route path="timesheets" element={<TimesheetsPage />} />
           <Route path="emails" element={<div className="p-8"><h1>Emails</h1></div>} />
-          <Route path="calendars" element={<div className="p-8"><h1>Calendars</h1></div>} />
+          <Route path="calendars" element={<CalendarPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="contacts" element={<div className="p-8"><h1>Contacts</h1></div>} />
           <Route path="companies" element={<div className="p-8"><h1>Companies</h1></div>} />

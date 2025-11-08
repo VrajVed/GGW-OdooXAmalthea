@@ -34,6 +34,7 @@ const salesOrderRoutes = require('./routes/sales-orders');
 const purchaseOrderRoutes = require('./routes/purchase-orders');
 const customerInvoiceRoutes = require('./routes/customer-invoices');
 const vendorBillRoutes = require('./routes/vendor-bills');
+const calendarRoutes = require('./routes/calendar');
 
 // Initialize Express app
 const app = express();
@@ -152,6 +153,9 @@ app.use('/api/customer-invoices', customerInvoiceRoutes);
 
 // Vendor Bill routes
 app.use('/api/vendor-bills', vendorBillRoutes);
+
+// Calendar routes
+app.use('/api/calendar', calendarRoutes);
 
 // ============================================================================
 // Error Handling Middleware

@@ -59,9 +59,16 @@ pool.on('error', (err, client) => {
     process.exit(-1);  // Exit process on unexpected errors
 });
 
-// Log when a new client is connected (useful for debugging)
-pool.on('connect', (client) => {
-    console.log('New client connected to database');
+// Set search_path and log when a new client is connected
+pool.on('connect', async (client) => {
+    try {
+        // Set search_path to include 'auth' schema
+        await client.query('SET search_path TO "$user", public, auth');
+        console.log('New client connected to database (search_path set)');
+    } catch (error) {
+        console.error('Error setting search_path:', error);
+        console.log('New client connected to database (search_path failed)');
+    }
 });
 
 // Log when a client is removed from the pool

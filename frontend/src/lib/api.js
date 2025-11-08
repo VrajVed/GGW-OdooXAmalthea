@@ -16,6 +16,15 @@ export const API_ENDPOINTS = {
   dashboard: {
     stats: '/api/dashboard/stats',
     projects: '/api/dashboard/projects'
+  },
+  calendar: {
+    authUrl: '/api/calendar/auth-url',
+    callback: '/api/calendar/callback',
+    calendars: '/api/calendar/calendars',
+    events: '/api/calendar/events',
+    status: '/api/calendar/status',
+    disconnect: '/api/calendar/disconnect',
+    upcomingEvents: '/api/calendar/upcoming-events'
   }
 }
 
@@ -687,4 +696,85 @@ export const dashboardApi = {
       method: 'GET',
     })
   },
+}
+
+// Calendar API functions
+export const calendarApi = {
+  // Get Google OAuth URL (frontend calls this)
+  getAuthUrl: async (userId) => {
+    const queryParams = new URLSearchParams()
+    if (userId) {
+      queryParams.append('user_id', userId)
+    }
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.calendar.authUrl}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Check connection status
+  getStatus: async (userId) => {
+    const queryParams = new URLSearchParams()
+    if (userId) {
+      queryParams.append('user_id', userId)
+    }
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.calendar.status}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get user's calendars
+  getCalendars: async (userId) => {
+    const queryParams = new URLSearchParams()
+    if (userId) {
+      queryParams.append('user_id', userId)
+    }
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.calendar.calendars}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get calendar events with filters
+  getEvents: async (filters = {}, userId) => {
+    const queryParams = new URLSearchParams()
+    if (userId) {
+      queryParams.append('user_id', userId)
+    }
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.calendar.events}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Disconnect Google Calendar
+  disconnect: async (userId) => {
+    return await apiCall(API_ENDPOINTS.calendar.disconnect, {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId }),
+    })
+  },
+
+  // Get upcoming events for notifications
+  getUpcomingEvents: async (userId) => {
+    const queryParams = new URLSearchParams()
+    if (userId) {
+      queryParams.append('user_id', userId)
+    }
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.calendar.upcomingEvents}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
 }
