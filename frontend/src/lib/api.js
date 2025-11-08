@@ -67,9 +67,16 @@ export const isAuthenticated = () => {
 
 // Project API functions
 export const projectApi = {
-  // Get all projects
-  getAll: async () => {
-    return await apiCall(API_ENDPOINTS.projects, {
+  // Get all projects (optional: filter by user_id for employee view)
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.projects}${queryString ? '?' + queryString : ''}`, {
       method: 'GET',
     })
   },
@@ -240,9 +247,16 @@ export const userApi = {
 
 // Task API functions
 export const taskApi = {
-  // Get all tasks for a project
-  getAll: async (projectId) => {
-    return await apiCall(API_ENDPOINTS.tasks(projectId), {
+  // Get all tasks for a project (optional: filter by user_id for employee view)
+  getAll: async (projectId, filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.tasks(projectId)}${queryString ? '?' + queryString : ''}`, {
       method: 'GET',
     })
   },
