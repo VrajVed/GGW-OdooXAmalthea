@@ -20,7 +20,7 @@ import { cn } from '../lib/utils'
 const navigationItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
-  { icon: FileText, label: 'Notes', path: '/notes' },
+  { icon: FileText, label: 'Projects', path: '/projects' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
   { icon: Mail, label: 'Emails', path: '/emails' },
   { icon: Calendar, label: 'Calendars', path: '/calendars' },
