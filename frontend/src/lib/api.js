@@ -9,6 +9,10 @@ export const API_ENDPOINTS = {
   tasks: (projectId) => `/api/projects/${projectId}/tasks`,
   expenses: '/api/expenses',
   timesheets: '/api/timesheets',
+  salesOrders: '/api/sales-orders',
+  purchaseOrders: '/api/purchase-orders',
+  customerInvoices: '/api/customer-invoices',
+  vendorBills: '/api/vendor-bills',
   dashboard: {
     stats: '/api/dashboard/stats',
     projects: '/api/dashboard/projects'
@@ -357,6 +361,294 @@ export const timesheetsApi = {
     const queryString = queryParams.toString()
     return await apiCall(`${API_ENDPOINTS.timesheets}/user-rates/${userId}${queryString ? '?' + queryString : ''}`, {
       method: 'GET',
+    })
+  },
+}
+
+// Sales Orders API functions
+export const salesOrdersApi = {
+  // Get all sales orders with filters
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.salesOrders}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get sales order stats
+  getStats: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.salesOrders}/stats${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get single sales order
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.salesOrders}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create sales order
+  create: async (salesOrderData) => {
+    return await apiCall(API_ENDPOINTS.salesOrders, {
+      method: 'POST',
+      body: JSON.stringify(salesOrderData),
+    })
+  },
+
+  // Update sales order
+  update: async (id, salesOrderData) => {
+    return await apiCall(`${API_ENDPOINTS.salesOrders}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(salesOrderData),
+    })
+  },
+
+  // Confirm sales order
+  confirm: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.salesOrders}/${id}/confirm`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Cancel sales order
+  cancel: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.salesOrders}/${id}/cancel`, {
+      method: 'PATCH',
+    })
+  },
+}
+
+// Purchase Orders API functions
+export const purchaseOrdersApi = {
+  // Get all purchase orders with filters
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.purchaseOrders}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get purchase order stats
+  getStats: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.purchaseOrders}/stats${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get single purchase order
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.purchaseOrders}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create purchase order
+  create: async (purchaseOrderData) => {
+    return await apiCall(API_ENDPOINTS.purchaseOrders, {
+      method: 'POST',
+      body: JSON.stringify(purchaseOrderData),
+    })
+  },
+
+  // Update purchase order
+  update: async (id, purchaseOrderData) => {
+    return await apiCall(`${API_ENDPOINTS.purchaseOrders}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(purchaseOrderData),
+    })
+  },
+
+  // Confirm purchase order
+  confirm: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.purchaseOrders}/${id}/confirm`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Cancel purchase order
+  cancel: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.purchaseOrders}/${id}/cancel`, {
+      method: 'PATCH',
+    })
+  },
+}
+
+// Customer Invoices API functions
+export const customerInvoicesApi = {
+  // Get all customer invoices with filters
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.customerInvoices}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get customer invoice stats
+  getStats: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.customerInvoices}/stats${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get single customer invoice
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.customerInvoices}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create customer invoice
+  create: async (invoiceData) => {
+    return await apiCall(API_ENDPOINTS.customerInvoices, {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    })
+  },
+
+  // Update customer invoice
+  update: async (id, invoiceData) => {
+    return await apiCall(`${API_ENDPOINTS.customerInvoices}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(invoiceData),
+    })
+  },
+
+  // Post customer invoice
+  post: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.customerInvoices}/${id}/post`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Cancel customer invoice
+  cancel: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.customerInvoices}/${id}/cancel`, {
+      method: 'PATCH',
+    })
+  },
+}
+
+// Vendor Bills API functions
+export const vendorBillsApi = {
+  // Get all vendor bills with filters
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.vendorBills}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get vendor bill stats
+  getStats: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.vendorBills}/stats${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get single vendor bill
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.vendorBills}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create vendor bill
+  create: async (billData) => {
+    return await apiCall(API_ENDPOINTS.vendorBills, {
+      method: 'POST',
+      body: JSON.stringify(billData),
+    })
+  },
+
+  // Update vendor bill
+  update: async (id, billData) => {
+    return await apiCall(`${API_ENDPOINTS.vendorBills}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(billData),
+    })
+  },
+
+  // Post vendor bill
+  post: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.vendorBills}/${id}/post`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Cancel vendor bill
+  cancel: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.vendorBills}/${id}/cancel`, {
+      method: 'PATCH',
     })
   },
 }
