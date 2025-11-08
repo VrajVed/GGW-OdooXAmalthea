@@ -117,10 +117,15 @@ router.get('/', async (req, res) => {
             params.push(date_to);
         }
 
-        // Status filter - use status column
+        // Status filter - compute from approved_by and note fields
         if (status) {
-            conditions.push(`t.status = $${paramIndex++}`);
-            params.push(status);
+            if (status === 'pending') {
+                conditions.push(`t.approved_by IS NULL AND (t.note IS NULL OR t.note NOT LIKE '%Rejected:%')`);
+            } else if (status === 'approved') {
+                conditions.push(`t.approved_by IS NOT NULL`);
+            } else if (status === 'rejected') {
+                conditions.push(`t.note LIKE '%Rejected:%'`);
+            }
         }
 
         const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -139,7 +144,6 @@ router.get('/', async (req, res) => {
                 t.bill_rate,
                 t.cost_rate,
                 t.note,
-                t.status,
                 t.approved_by,
                 t.approved_at,
                 t.locked_at,
@@ -208,7 +212,7 @@ router.get('/', async (req, res) => {
             approvedAt: row.approved_at,
             lockedAt: row.locked_at,
             invoiceLineId: row.invoice_line_id,
-            status: row.status || 'pending',
+            status: row.approved_by ? 'approved' : (row.note && row.note.includes('Rejected:') ? 'rejected' : 'pending'),
             createdAt: row.created_at
         }));
 
@@ -286,7 +290,7 @@ router.get('/stats', async (req, res) => {
             SELECT 
                 COALESCE(SUM(t.hours), 0) as total_hours,
                 COALESCE(SUM(t.hours) FILTER (WHERE t.is_billable = true), 0) as billable_hours,
-                COUNT(*) FILTER (WHERE t.status = 'pending') as pending_approvals,
+                COUNT(*) FILTER (WHERE t.approved_by IS NULL AND (t.note IS NULL OR t.note NOT LIKE '%Rejected:%')) as pending_approvals,
                 COALESCE(SUM(t.hours * COALESCE(t.cost_rate, 0)), 0) as total_cost
             FROM project.timesheets t
             ${whereClause}
@@ -372,7 +376,7 @@ router.get('/:id', async (req, res) => {
             approvedAt: row.approved_at,
             lockedAt: row.locked_at,
             invoiceLineId: row.invoice_line_id,
-            status: row.status || 'pending',
+            status: row.approved_by ? 'approved' : (row.note && row.note.includes('Rejected:') ? 'rejected' : 'pending'),
             createdAt: row.created_at
         };
 
@@ -802,8 +806,7 @@ router.patch('/:id/approve', async (req, res) => {
         const updateQuery = `
             UPDATE project.timesheets
             SET approved_by = $1,
-                approved_at = NOW(),
-                status = 'approved'
+                approved_at = NOW()
             WHERE id = $2
             RETURNING *
         `;
@@ -865,7 +868,6 @@ router.patch('/:id/reject', async (req, res) => {
         const updateQuery = `
             UPDATE project.timesheets
             SET note = $1,
-                status = 'rejected',
                 approved_by = NULL,
                 approved_at = NULL
             WHERE id = $2
@@ -955,8 +957,7 @@ router.post('/bulk-approve', async (req, res) => {
         const updateQuery = `
             UPDATE project.timesheets
             SET approved_by = $1,
-                approved_at = NOW(),
-                status = 'approved'
+                approved_at = NOW()
             WHERE id = ANY($2::uuid[])
             RETURNING id
         `;
@@ -1012,8 +1013,8 @@ router.post('/bulk-reject', async (req, res) => {
             const currentNote = row.note || '';
             const rejectionNote = `${currentNote}\n\nRejected: ${reason}`.trim();
             return pool.query(
-                'UPDATE project.timesheets SET note = $1, status = $2, approved_by = NULL, approved_at = NULL WHERE id = $3',
-                [rejectionNote, 'rejected', row.id]
+                'UPDATE project.timesheets SET note = $1, approved_by = NULL, approved_at = NULL WHERE id = $2',
+                [rejectionNote, row.id]
             );
         });
 

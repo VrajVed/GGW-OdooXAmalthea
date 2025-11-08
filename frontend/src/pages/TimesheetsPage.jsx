@@ -381,10 +381,7 @@ export default function TimesheetsPage() {
             Rejected
           </button>
           <button
-            onClick={() => {
-              const { status, ...restFilters } = filters
-              handleFilterChange(restFilters)
-            }}
+            onClick={() => handleFilterChange({ status: undefined })}
             className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
               !filters.status
                 ? 'text-white'
@@ -448,7 +445,17 @@ export default function TimesheetsPage() {
                 </p>
                 <div className="flex items-center justify-center gap-3">
                   <button
-                    onClick={() => setFilters({ date_from: getDate90DaysAgo(), date_to: new Date().toISOString().split('T')[0] })}
+                    onClick={() => {
+                      // Clear all filters including dates
+                      const allFilterKeys = Object.keys(filters)
+                      const clearFilters = {}
+                      allFilterKeys.forEach(key => {
+                        clearFilters[key] = undefined
+                      })
+                      clearFilters.date_from = undefined
+                      clearFilters.date_to = undefined
+                      handleFilterChange(clearFilters)
+                    }}
                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                   >
                     Clear Filters

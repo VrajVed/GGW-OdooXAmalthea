@@ -21,9 +21,15 @@ async function getOrgId(req) {
             }
         }
         if (!orgId) {
-            const orgQuery = await pool.query('SELECT id FROM auth.orgs LIMIT 1');
+            // Try to get GGW Organization first, otherwise get first org
+            let orgQuery = await pool.query("SELECT id FROM auth.orgs WHERE name = 'GGW Organization' LIMIT 1");
             if (orgQuery.rows.length > 0) {
                 orgId = orgQuery.rows[0].id;
+            } else {
+                orgQuery = await pool.query('SELECT id FROM auth.orgs ORDER BY created_at LIMIT 1');
+                if (orgQuery.rows.length > 0) {
+                    orgId = orgQuery.rows[0].id;
+                }
             }
         }
     } catch (orgError) {
@@ -88,6 +94,8 @@ router.get('/', async (req, res) => {
         } = req.query;
 
         const orgId = await getOrgId(req);
+        console.log('Sales Orders API - orgId:', orgId);
+        console.log('Sales Orders API - filters:', req.query);
 
         // Build WHERE clause dynamically
         const conditions = [];
@@ -182,7 +190,11 @@ router.get('/', async (req, res) => {
 
         params.push(parseInt(limit) || 100, parseInt(offset) || 0);
 
+        console.log('Sales Orders API - Query:', query.replace(/\s+/g, ' ').trim());
+        console.log('Sales Orders API - Params:', params);
+
         const result = await pool.query(query, params);
+        console.log('Sales Orders API - Result count:', result.rows.length);
 
         const salesOrders = result.rows.map(row => ({
             id: row.id,
