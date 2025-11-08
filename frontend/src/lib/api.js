@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
   login: '/api/users/login',
   users: '/api/users',
   projects: '/api/projects',
+  expenses: '/api/expenses',
 }
 
 // Helper function for API calls
@@ -91,5 +92,121 @@ export const projectApi = {
     return await apiCall(`${API_ENDPOINTS.projects}/${id}`, {
       method: 'DELETE',
     })
+  },
+}
+
+// Expenses API functions
+export const expensesApi = {
+  // Get all expenses with filters
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        if (Array.isArray(filters[key])) {
+          filters[key].forEach(val => queryParams.append(key, val))
+        } else {
+          queryParams.append(key, filters[key])
+        }
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.expenses}${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get expense stats
+  getStats: async (filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.expenses}/stats${queryString ? '?' + queryString : ''}`, {
+      method: 'GET',
+    })
+  },
+
+  // Get single expense
+  getById: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  // Create expense
+  create: async (expenseData) => {
+    return await apiCall(API_ENDPOINTS.expenses, {
+      method: 'POST',
+      body: JSON.stringify(expenseData),
+    })
+  },
+
+  // Update expense
+  update: async (id, expenseData) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(expenseData),
+    })
+  },
+
+  // Approve expense
+  approve: async (id) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/${id}/approve`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Reject expense
+  reject: async (id, reason) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/${id}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    })
+  },
+
+  // Add to invoice
+  addToInvoice: async (id, invoiceData) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/${id}/add-to-invoice`, {
+      method: 'PATCH',
+      body: JSON.stringify(invoiceData),
+    })
+  },
+
+  // Bulk approve
+  bulkApprove: async (expenseIds) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/bulk-approve`, {
+      method: 'POST',
+      body: JSON.stringify({ expense_ids: expenseIds }),
+    })
+  },
+
+  // Bulk reject
+  bulkReject: async (expenseIds, reason) => {
+    return await apiCall(`${API_ENDPOINTS.expenses}/bulk-reject`, {
+      method: 'POST',
+      body: JSON.stringify({ expense_ids: expenseIds, reason }),
+    })
+  },
+
+  // Upload receipt
+  uploadReceipt: async (file) => {
+    const formData = new FormData()
+    formData.append('receipt', file)
+    const url = `${API_BASE_URL}${API_ENDPOINTS.expenses}/upload-receipt`
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Receipt upload error:', error)
+      throw error
+    }
   },
 }

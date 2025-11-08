@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import LandingPage from './pages/LandingPage'
+import ExpensesPage from './pages/ExpensesPage'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="tasks" element={<TasksPage />} />
+          <Route path="expenses" element={<ExpensesPage />} />
           <Route path="emails" element={<div className="p-8"><h1>Emails</h1></div>} />
           <Route path="calendars" element={<div className="p-8"><h1>Calendars</h1></div>} />
           <Route path="analytics" element={<AnalyticsPage />} />
