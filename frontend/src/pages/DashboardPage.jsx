@@ -115,8 +115,6 @@ const DashboardPage = () => {
       label: 'Active Projects',
       value: dashboardData.stats.activeProjects,
       icon: Briefcase,
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
       description: 'Currently in progress'
     },
     {
@@ -124,8 +122,6 @@ const DashboardPage = () => {
       label: 'Delayed Tasks',
       value: dashboardData.stats.delayedTasks,
       icon: AlertTriangle,
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600',
       description: 'Past due date'
     },
     {
@@ -133,8 +129,6 @@ const DashboardPage = () => {
       label: 'Hours Logged',
       value: dashboardData.stats.hoursLogged.toFixed(1),
       icon: Clock,
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600',
       description: 'Total time tracked'
     },
     {
@@ -142,8 +136,6 @@ const DashboardPage = () => {
       label: 'Revenue Earned',
       value: `₹${dashboardData.stats.revenueEarned.toLocaleString()}`,
       icon: TrendingUp,
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600',
       description: 'Approved expenses'
     }
   ]
@@ -164,19 +156,19 @@ const DashboardPage = () => {
 
   const getStatusStyles = (status) => {
     const styles = {
-      planned: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
-      in_progress: { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200' },
-      completed: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200' },
-      on_hold: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-200' }
+      planned: { bg: 'bg-purple-50', text: 'text-[#714b67]', border: 'border-purple-200' },
+      in_progress: { bg: 'bg-purple-100', text: 'text-[#5a3a52]', border: 'border-purple-300' },
+      completed: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300' },
+      on_hold: { bg: 'bg-gray-50', text: 'text-gray-600', border: 'border-gray-200' }
     }
     return styles[status] || styles.planned
   }
 
   const getProgressBarColor = (progress) => {
-    if (progress >= 75) return 'bg-green-500'
-    if (progress >= 50) return 'bg-yellow-500'
-    if (progress >= 25) return 'bg-orange-500'
-    return 'bg-red-500'
+    if (progress >= 75) return 'bg-[#714b67]'
+    if (progress >= 50) return 'bg-[#8a5a7f]'
+    if (progress >= 25) return 'bg-purple-300'
+    return 'bg-purple-200'
   }
 
   const formatDate = (dateString) => {
@@ -202,7 +194,7 @@ const DashboardPage = () => {
     return (
       <div className="h-full bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <AlertTriangle className="w-12 h-12 text-[#714b67] mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Dashboard</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
@@ -245,13 +237,12 @@ const DashboardPage = () => {
               return (
                 <div
                   key={metric.id}
-                  className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                  className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200"
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`${metric.bgColor} p-3 rounded-lg group-hover:scale-110 transition-transform`}>
-                      <Icon className={`w-6 h-6 ${metric.iconColor}`} />
+                    <div className="bg-purple-50 p-3 rounded-lg">
+                      <Icon className="w-6 h-6 text-[#714b67]" />
                     </div>
-                    <ArrowUpRight className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600 mb-1">{metric.label}</p>
@@ -363,21 +354,21 @@ const DashboardPage = () => {
                     {/* Metrics */}
                     <div className="grid grid-cols-3 gap-3 mb-4 py-3 border-t border-b border-gray-100">
                       <div className="text-center">
-                        <CheckCircle2 className="w-4 h-4 text-green-600 mx-auto mb-1" />
+                        <CheckCircle2 className="w-4 h-4 text-[#714b67] mx-auto mb-1" />
                         <p className="text-xs text-gray-600 mb-0.5">Tasks</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {project.tasks.completed}/{project.tasks.total}
                         </p>
                       </div>
                       <div className="text-center">
-                        <AlertTriangle className="w-4 h-4 text-red-600 mx-auto mb-1" />
+                        <AlertTriangle className="w-4 h-4 text-[#714b67] mx-auto mb-1" />
                         <p className="text-xs text-gray-600 mb-0.5">Delayed</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {project.tasks.delayed}
                         </p>
                       </div>
                       <div className="text-center">
-                        <Calendar className="w-4 h-4 text-blue-600 mx-auto mb-1" />
+                        <Calendar className="w-4 h-4 text-[#714b67] mx-auto mb-1" />
                         <p className="text-xs text-gray-600 mb-0.5">Due</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {formatDate(project.due)}
