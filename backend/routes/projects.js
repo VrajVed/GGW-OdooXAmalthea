@@ -26,6 +26,7 @@ router.get('/', async (req, res) => {
                 p.progress_pct as progress,
                 p.tags,
                 p.color,
+                p.extra,
                 u.full_name as manager_name,
                 u.email as manager_email,
                 (SELECT COUNT(*) FROM project.tasks t WHERE t.project_id = p.id) as tasks,
@@ -55,6 +56,7 @@ router.get('/', async (req, res) => {
             },
             tags: row.tags || [],
             color: row.color,
+            image: row.extra?.image || null,
             createdAt: row.created_at,
             updatedAt: row.updated_at
         }));
@@ -153,7 +155,8 @@ router.post('/', async (req, res) => {
             due,
             managerEmail,
             tags,
-            color
+            color,
+            image
         } = req.body;
 
         // Validate required fields
@@ -188,6 +191,12 @@ router.post('/', async (req, res) => {
 
         const dbStatus = mapFrontendStatus(status);
 
+        // Prepare extra column with image if provided
+        let extraData = {};
+        if (image && image.base64) {
+            extraData.image = image;
+        }
+
         const query = `
             INSERT INTO project.projects (
                 org_id,
@@ -199,8 +208,9 @@ router.post('/', async (req, res) => {
                 manager_user_id,
                 tags,
                 color,
-                progress_pct
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                progress_pct,
+                extra
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             RETURNING *
         `;
 
@@ -214,7 +224,8 @@ router.post('/', async (req, res) => {
             managerUserId,
             tags || [],
             color || null,
-            0 // Initial progress
+            0, // Initial progress
+            JSON.stringify(extraData)
         ];
 
         const result = await pool.query(query, values);
@@ -234,7 +245,8 @@ router.post('/', async (req, res) => {
                 progress: 0,
                 manager: { name: 'Unassigned' },
                 tags: newProject.tags || [],
-                color: newProject.color
+                color: newProject.color,
+                image: newProject.extra?.image || null
             }
         });
 
@@ -271,11 +283,12 @@ router.put('/:id', async (req, res) => {
             due,
             progress,
             tags,
-            color
+            color,
+            image
         } = req.body;
 
-        // Check if project exists
-        const checkQuery = 'SELECT id FROM project.projects WHERE id = $1 AND archived_at IS NULL';
+        // Check if project exists and get current extra data
+        const checkQuery = 'SELECT id, extra FROM project.projects WHERE id = $1 AND archived_at IS NULL';
         const checkResult = await pool.query(checkQuery, [id]);
         
         if (checkResult.rows.length === 0) {
@@ -286,6 +299,32 @@ router.put('/:id', async (req, res) => {
         }
 
         const dbStatus = mapFrontendStatus(status);
+
+        // Handle image update in extra column
+        let extraUpdate = '';
+        const values = [
+            name || null,
+            description !== undefined ? description : null,
+            dbStatus || null,
+            start !== undefined ? start : null,
+            due !== undefined ? due : null,
+            progress !== undefined ? progress : null,
+            tags || null,
+            color || null,
+            id
+        ];
+
+        // If image is explicitly provided (including null to remove)
+        if (image !== undefined) {
+            if (image === null) {
+                // Remove image from extra
+                extraUpdate = ", extra = COALESCE(extra, '{}'::jsonb) - 'image'";
+            } else if (image.base64) {
+                // Add or update image in extra
+                extraUpdate = `, extra = jsonb_set(COALESCE(extra, '{}'::jsonb), '{image}', $10::jsonb)`;
+                values.push(JSON.stringify(image));
+            }
+        }
 
         const query = `
             UPDATE project.projects
@@ -299,21 +338,10 @@ router.put('/:id', async (req, res) => {
                 tags = COALESCE($7, tags),
                 color = COALESCE($8, color),
                 updated_at = NOW()
+                ${extraUpdate}
             WHERE id = $9
             RETURNING *
         `;
-
-        const values = [
-            name || null,
-            description !== undefined ? description : null,
-            dbStatus || null,
-            start !== undefined ? start : null,
-            due !== undefined ? due : null,
-            progress !== undefined ? progress : null,
-            tags || null,
-            color || null,
-            id
-        ];
 
         const result = await pool.query(query, values);
         const updatedProject = result.rows[0];
@@ -330,7 +358,8 @@ router.put('/:id', async (req, res) => {
                 due: updatedProject.end_date ? updatedProject.end_date.toISOString().split('T')[0] : null,
                 progress: parseFloat(updatedProject.progress_pct) || 0,
                 tags: updatedProject.tags || [],
-                color: updatedProject.color
+                color: updatedProject.color,
+                image: updatedProject.extra?.image || null
             }
         });
 

@@ -23,6 +23,26 @@ export default function ProjectCard({ project, onEdit, onDelete, onOpen }){
         </div>
       </div>
 
+      {/* Project Image */}
+      {project.image && project.image.base64 && (
+        <div className="mt-3">
+          <img 
+            src={project.image.base64} 
+            alt={project.name}
+            className="w-full h-32 object-cover rounded-lg"
+          />
+        </div>
+      )}
+      {project.image && project.image.url && (
+        <div className="mt-3">
+          <img 
+            src={`http://localhost:5000${project.image.url}`}
+            alt={project.name}
+            className="w-full h-32 object-cover rounded-lg"
+          />
+        </div>
+      )}
+
       <div className="mt-3">
         <h4 className="text-md font-semibold text-gray-900">{project.name}</h4>
         <p className="mt-3 text-sm text-gray-600 leading-relaxed">{project.description}</p>

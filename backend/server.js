@@ -16,6 +16,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
 require('dotenv').config();
 
 // Import database utilities
@@ -24,6 +25,7 @@ const { testConnection, closePool } = require('./config/database');
 // Import routes
 const userRoutes = require('./routes/users');
 const projectRoutes = require('./routes/projects');
+const uploadRoutes = require('./routes/upload');
 
 // Initialize Express app
 const app = express();
@@ -58,6 +60,9 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // ============================================================================
 // Routes
 // ============================================================================
@@ -90,6 +95,9 @@ app.use('/api/users', userRoutes);
 
 // Project routes
 app.use('/api/projects', projectRoutes);
+
+// Upload routes
+app.use('/api/upload', uploadRoutes);
 
 // ============================================================================
 // Error Handling Middleware
