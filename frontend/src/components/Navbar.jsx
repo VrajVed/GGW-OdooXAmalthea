@@ -6,14 +6,13 @@ import {
   Bell, 
   FileText, 
   CheckSquare, 
-  Mail, 
   Calendar,
   BarChart3,
   Users,
   Briefcase,
-  Puzzle,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Receipt
 } from 'lucide-react'
 import { cn } from '../lib/utils'
 
@@ -22,7 +21,7 @@ const navigationItems = [
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: FileText, label: 'Projects', path: '/projects' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
-  { icon: Mail, label: 'Emails', path: '/emails' },
+  { icon: Receipt, label: 'Expenses', path: '/expenses' },
   { icon: Calendar, label: 'Calendars', path: '/calendars' },
 ]
 
@@ -33,7 +32,6 @@ const databaseItems = [
 ]
 
 const otherItems = [
-  { icon: Puzzle, label: 'Integrations', path: '/integrations' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ]
 
@@ -90,9 +88,9 @@ function Navbar() {
       <div className="flex items-center justify-between max-w-full">
         <div className="flex items-center gap-3 flex-shrink-0">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#714b67' }}>
-            <span className="text-white font-bold text-lg">V</span>
+            <span className="text-white font-bold text-lg">O</span>
           </div>
-          <span className="text-xl font-semibold text-gray-900">Venture</span>
+          <span className="text-xl font-semibold text-gray-900">OneFlow</span>
         </div>
 
   <div className="flex items-center gap-1 flex-1 justify-center overflow-x-auto overflow-y-visible">
