@@ -1,41 +1,26 @@
 import { Plus } from 'lucide-react'
 import TaskCard from './TaskCard'
 
-function KanbanColumn({ title, count, tasks, isCompleted = false }) {
-  const getDotColor = () => {
-    if (title === "Planned") return "bg-blue-500"
-    if (title === "Upcoming") return "bg-yellow-500"
-    if (title === "Completed") return "bg-green-500"
-    return "bg-gray-500"
-  }
-
+function KanbanColumn({ title, count, tasks, isCompleted = false, onTaskClick }) {
   return (
-    <div className="flex-shrink-0 w-80">
-      <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
-  <div className="mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${getDotColor()}`}></div>
-              <h3 className="text-sm font-semibold text-gray-900">
-                {title}
-              </h3>
-            </div>
-            <span className="text-xs text-gray-500">
-              {count} {isCompleted ? 'completed' : 'open'} {count === 1 ? 'task' : 'tasks'}
+    <div className="flex-shrink-0 w-[400px]">
+      <div className="bg-gray-50 rounded-lg p-4 h-full">
+        {/* Header */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-semibold text-gray-900">
+              {title}
+            </h3>
+            <span className="text-sm text-gray-500 bg-white px-2.5 py-1 rounded-full">
+              {count}
             </span>
           </div>
-          <button 
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            style={{ border: '1.5px solid #714b67' }}
-          >
-            <Plus className="w-4 h-4" />
-            Create Task
-          </button>
         </div>
 
-  <div className="space-y-3">
+        {/* Tasks */}
+        <div className="space-y-4">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.id} task={task} onClick={() => onTaskClick(task)} />
           ))}
         </div>
       </div>
