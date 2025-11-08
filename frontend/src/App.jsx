@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import NotesPage from './pages/NotesPage'
+import ProjectsPage from './pages/ProjectsPage'
 import TasksPage from './pages/TasksPage'
 import NotificationsPage from './pages/NotificationsPage'
 import AnalyticsPage from './pages/AnalyticsPage'
@@ -21,6 +22,7 @@ function App() {
         <Route path="/app" element={<Layout />}>
           <Route index element={<NotesPage />} />
           <Route path="notes" element={<NotesPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="tasks" element={<TasksPage />} />
