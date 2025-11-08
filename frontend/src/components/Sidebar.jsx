@@ -10,7 +10,9 @@ import {
   Users,
   Briefcase,
   Puzzle,
-  Settings
+  Settings,
+  Clock,
+  Receipt
 } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { removeUser } from '../lib/api'
@@ -21,6 +23,8 @@ const navigationItems = [
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: FileText, label: 'Notes', path: '/notes' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
+  { icon: Receipt, label: 'Expenses', path: '/expenses' },
+  { icon: Clock, label: 'Timesheets', path: '/timesheets' },
   { icon: Mail, label: 'Emails', path: '/emails' },
   { icon: Calendar, label: 'Calendars', path: '/calendars' },
 ]

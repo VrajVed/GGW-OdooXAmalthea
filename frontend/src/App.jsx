@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import LandingPage from './pages/LandingPage'
 import ExpensesPage from './pages/ExpensesPage'
+import TimesheetsPage from './pages/TimesheetsPage'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="tasks" element={<TasksPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
+          <Route path="timesheets" element={<TimesheetsPage />} />
           <Route path="emails" element={<div className="p-8"><h1>Emails</h1></div>} />
           <Route path="calendars" element={<div className="p-8"><h1>Calendars</h1></div>} />
           <Route path="analytics" element={<AnalyticsPage />} />

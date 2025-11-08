@@ -28,6 +28,7 @@ const projectRoutes = require('./routes/projects');
 const uploadRoutes = require('./routes/upload');
 const taskRoutes = require('./routes/tasks');
 const expenseRoutes = require('./routes/expenses');
+const timesheetRoutes = require('./routes/timesheets');
 
 // Initialize Express app
 const app = express();
@@ -128,6 +129,9 @@ app.use('/api/upload', uploadRoutes);
 
 // Expense routes
 app.use('/api/expenses', expenseRoutes);
+
+// Timesheet routes
+app.use('/api/timesheets', timesheetRoutes);
 
 // ============================================================================
 // Error Handling Middleware
