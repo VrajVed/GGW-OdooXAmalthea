@@ -30,6 +30,10 @@ const taskRoutes = require('./routes/tasks');
 const expenseRoutes = require('./routes/expenses');
 const timesheetRoutes = require('./routes/timesheets');
 const dashboardRoutes = require('./routes/dashboard');
+const salesOrderRoutes = require('./routes/sales-orders');
+const purchaseOrderRoutes = require('./routes/purchase-orders');
+const customerInvoiceRoutes = require('./routes/customer-invoices');
+const vendorBillRoutes = require('./routes/vendor-bills');
 
 // Initialize Express app
 const app = express();
@@ -136,6 +140,18 @@ app.use('/api/expenses', expenseRoutes);
 
 // Timesheet routes
 app.use('/api/timesheets', timesheetRoutes);
+
+// Sales Order routes
+app.use('/api/sales-orders', salesOrderRoutes);
+
+// Purchase Order routes
+app.use('/api/purchase-orders', purchaseOrderRoutes);
+
+// Customer Invoice routes
+app.use('/api/customer-invoices', customerInvoiceRoutes);
+
+// Vendor Bill routes
+app.use('/api/vendor-bills', vendorBillRoutes);
 
 // ============================================================================
 // Error Handling Middleware
