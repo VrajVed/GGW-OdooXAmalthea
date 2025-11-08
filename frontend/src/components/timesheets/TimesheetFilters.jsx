@@ -212,7 +212,18 @@ export default function TimesheetFilters({ filters, projects, employees, onFilte
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-medium text-gray-700">Active Filters</span>
                   <button
-                    onClick={() => onFilterChange({})}
+                    onClick={() => {
+                      // Clear all filters including dates
+                      const allFilterKeys = Object.keys(filters)
+                      const clearFilters = {}
+                      allFilterKeys.forEach(key => {
+                        clearFilters[key] = undefined
+                      })
+                      // Also explicitly clear date filters
+                      clearFilters.date_from = undefined
+                      clearFilters.date_to = undefined
+                      onFilterChange(clearFilters)
+                    }}
                     className="text-xs hover:underline"
                     style={{ color: '#714b67' }}
                   >

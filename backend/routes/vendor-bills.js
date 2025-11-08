@@ -21,7 +21,11 @@ async function getOrgId(req) {
             }
         }
         if (!orgId) {
-            const orgQuery = await pool.query('SELECT id FROM auth.orgs LIMIT 1');
+            // Try to get GGW Organization first, otherwise get first org
+            let orgQuery = await pool.query("SELECT id FROM auth.orgs WHERE name = 'GGW Organization' LIMIT 1");
+            if (orgQuery.rows.length === 0) {
+                orgQuery = await pool.query('SELECT id FROM auth.orgs ORDER BY created_at LIMIT 1');
+            }
             if (orgQuery.rows.length > 0) {
                 orgId = orgQuery.rows[0].id;
             }

@@ -5,7 +5,6 @@ import {
   Bell, 
   FileText, 
   CheckSquare, 
-  Calendar,
   BarChart3,
   Clock,
   Users,
@@ -24,7 +23,6 @@ const navigationItems = [
   { icon: FileText, label: 'Projects', path: '/projects' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
   { icon: Receipt, label: 'Expenses', path: '/expenses' },
-  { icon: Calendar, label: 'Calendars', path: '/calendars' },
   { icon: Clock, label: 'Timesheets', path: '/timesheets' },
 ]
 
