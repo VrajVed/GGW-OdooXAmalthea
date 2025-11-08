@@ -44,15 +44,15 @@ function Navbar() {
   const buttonRef = useRef(null)
 
   const isActive = (path) => {
-    if (path === '/notes' && location.pathname === '/') return true
-    return location.pathname === path
+    const full = `/app${path}`
+    return location.pathname === full
   }
 
   const NavItem = ({ item, isActive: active }) => {
     const Icon = item.icon
     return (
       <Link
-        to={item.path}
+        to={`/app${item.path}`}
         className={cn(
           "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm",
           active
@@ -139,7 +139,7 @@ function Navbar() {
                   return (
                     <Link
                       key={item.path}
-                      to={item.path}
+                      to={`/app${item.path}`}
                       onClick={(e) => {
                         e.stopPropagation()
                         setDatabaseOpen(false)
