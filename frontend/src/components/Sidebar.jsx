@@ -24,9 +24,9 @@ const navigationItems = [
   { icon: FileText, label: 'Notes', path: '/notes' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
   { icon: Receipt, label: 'Expenses', path: '/expenses' },
-  { icon: Clock, label: 'Timesheets', path: '/timesheets' },
   { icon: Mail, label: 'Emails', path: '/emails' },
   { icon: Calendar, label: 'Calendars', path: '/calendars' },
+  { icon: Clock, label: 'Timesheets', path: '/timesheets' },
 ]
 
 const databaseItems = [

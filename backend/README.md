@@ -55,7 +55,8 @@ CREATE DATABASE user_management_db;
 ### 3. Run Schema
 
 ```powershell
-psql -U postgres -d user_management_db -f database/schema.sql
+# Make sure to set DB_NAME in your .env file first
+psql -U postgres -d user_management_db -f database/oneflow-schema.sql
 ```
 
 ### 4. Install Dependencies

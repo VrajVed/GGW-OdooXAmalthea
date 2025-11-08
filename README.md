@@ -23,13 +23,13 @@ A full-stack project management application with Kanban board, built with React 
 
 3. **Environment Configuration**
    - The `.env` file is already configured with:
-     - Database: `ggw_odoo_db`
+     - Database: `user_management_db` (configurable via DB_NAME)
      - User: `postgres`
      - Password: `root`
      - Port: `5000`
 
 4. **Database is already set up with:**
-   - ✅ Database created (`ggw_odoo_db`)
+   - ✅ Database created (name from DB_NAME env variable)
    - ✅ Schema loaded (6 schemas: auth, catalog, project, finance, ops, analytics)
    - ✅ Sample data loaded (1 org, 1 user, 5 projects)
 
@@ -212,7 +212,7 @@ FRONTEND_URL=http://localhost:5173
 # Database
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=ggw_odoo_db
+DB_NAME=user_management_db
 DB_USER=postgres
 DB_PASSWORD=root
 
@@ -257,7 +257,8 @@ VITE_API_URL=http://localhost:5000
 
 ### Test Database Connection
 ```powershell
-psql -U postgres -d ggw_odoo_db -c "SELECT name, status, progress_pct FROM project.projects;"
+# Use the database name from your .env file
+psql -U postgres -d user_management_db -c "SELECT name, status, progress_pct FROM project.projects;"
 ```
 
 ### Test Backend API
