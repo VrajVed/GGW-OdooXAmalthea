@@ -11,3 +11,5 @@
 # Keep node_modules and other common ignores (optional)
 node_modules/
 /.env
+!frontend/src/images/logo.png
+!**/logo.png
