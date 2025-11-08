@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MoreVertical } from 'lucide-react'
 
-export default function ProjectCard({ project, onEdit, onDelete, onOpen }){
+export default function ProjectCard({ project, onEdit, onDelete, onOpen, readOnly }){
   const [open, setOpen] = useState(false)
   return (
   <div onClick={(e)=>{ try { if (e.target instanceof Element && e.target.closest('.kebab')) return } catch(_){}; onOpen && onOpen() }} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-1 p-4 cursor-pointer w-full">
@@ -9,18 +9,20 @@ export default function ProjectCard({ project, onEdit, onDelete, onOpen }){
         <div className="flex-1">
           {/* tags intentionally not shown per request */}
         </div>
-        <div className="relative kebab">
-          <button onClick={(ev)=>{ ev.stopPropagation(); setOpen(o=>!o) }} className="p-1 rounded hover:bg-gray-100">
-            <MoreVertical className="w-4 h-4 text-gray-600" />
-          </button>
-          {open && (
-            <div onClick={(ev)=>ev.stopPropagation()} className="absolute right-0 mt-2 bg-white border rounded shadow z-20">
-              <button onClick={()=>{ setOpen(false); onOpen && onOpen() }} className="block px-4 py-2 text-sm">Open</button>
-              <button onClick={()=>{ setOpen(false); onEdit && onEdit() }} className="block px-4 py-2 text-sm">Edit</button>
-              <button onClick={()=>{ setOpen(false); onDelete && onDelete() }} className="block px-4 py-2 text-sm text-red-600">Delete</button>
-            </div>
-          )}
-        </div>
+        {!readOnly && (
+          <div className="relative kebab">
+            <button onClick={(ev)=>{ ev.stopPropagation(); setOpen(o=>!o) }} className="p-1 rounded hover:bg-gray-100">
+              <MoreVertical className="w-4 h-4 text-gray-600" />
+            </button>
+            {open && (
+              <div onClick={(ev)=>ev.stopPropagation()} className="absolute right-0 mt-2 bg-white border rounded shadow z-20">
+                <button onClick={()=>{ setOpen(false); onOpen && onOpen() }} className="block px-4 py-2 text-sm">Open</button>
+                <button onClick={()=>{ setOpen(false); onEdit && onEdit() }} className="block px-4 py-2 text-sm">Edit</button>
+                <button onClick={()=>{ setOpen(false); onDelete && onDelete() }} className="block px-4 py-2 text-sm text-red-600">Delete</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Project Image */}

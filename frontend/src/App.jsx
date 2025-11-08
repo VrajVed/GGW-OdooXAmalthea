@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import EmployeeLayout from './components/EmployeeLayout'
 import NotesPage from './pages/NotesPage'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectDetailsPage from './pages/ProjectDetailsPage'
@@ -19,6 +20,16 @@ import CustomerInvoicesPage from './pages/CustomerInvoicesPage'
 import VendorBillsPage from './pages/VendorBillsPage'
 import CalendarPage from './pages/CalendarPage'
 
+// Employee Pages
+import EmployeeDashboardPage from './pages/employee/EmployeeDashboardPage'
+import EmployeeNotesPage from './pages/employee/EmployeeNotesPage'
+import EmployeeProjectsPage from './pages/employee/EmployeeProjectsPage'
+import EmployeeProjectDetailsPage from './pages/employee/EmployeeProjectDetailsPage'
+import EmployeeTasksPage from './pages/employee/EmployeeTasksPage'
+import EmployeeNotificationsPage from './pages/employee/EmployeeNotificationsPage'
+import EmployeeExpensesPage from './pages/employee/EmployeeExpensesPage'
+import EmployeeTimesheetsPage from './pages/employee/EmployeeTimesheetsPage'
+
 function App() {
   return (
     <Router>
@@ -28,6 +39,7 @@ function App() {
   <Route path="/login" element={<LoginPage />} />
   <Route path="/signup" element={<SignupPage />} />
 
+        {/* Project Manager Routes */}
         <Route path="/app" element={<Layout />}>
           <Route index element={<DashboardPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
@@ -49,6 +61,21 @@ function App() {
           <Route path="settings/purchase-orders" element={<PurchaseOrdersPage />} />
           <Route path="settings/invoices" element={<CustomerInvoicesPage />} />
           <Route path="settings/vendor-bills" element={<VendorBillsPage />} />
+        </Route>
+
+        {/* Employee Routes */}
+        <Route path="/employee" element={<EmployeeLayout />}>
+          <Route index element={<EmployeeDashboardPage />} />
+          <Route path="dashboard" element={<EmployeeDashboardPage />} />
+          <Route path="notes" element={<EmployeeNotesPage />} />
+          <Route path="projects" element={<EmployeeProjectsPage />} />
+          <Route path="projects/:projectId" element={<EmployeeProjectDetailsPage />} />
+          <Route path="notifications" element={<EmployeeNotificationsPage />} />
+          <Route path="tasks" element={<EmployeeTasksPage />} />
+          <Route path="expenses" element={<EmployeeExpensesPage />} />
+          <Route path="timesheets" element={<EmployeeTimesheetsPage />} />
+          <Route path="emails" element={<div className="p-8"><h1>Emails</h1></div>} />
+          <Route path="calendars" element={<div className="p-8"><h1>Calendars</h1></div>} />
         </Route>
       </Routes>
     </Router>

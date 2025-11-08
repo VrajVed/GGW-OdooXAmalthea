@@ -330,9 +330,15 @@ router.post('/', async (req, res) => {
  * BONUS ENDPOINT: Retrieve all tasks
  * WHY: You'll need this to display tasks on the frontend
  */
+// ============================================================================
+// GET /api/projects/:id/tasks - Get all tasks for a project
+// Query Parameters:
+//   - user_id: Filter tasks assigned to specific user (employee view)
+// ============================================================================
 router.get('/', async (req, res) => {
     try {
         const projectId = req.params.id;
+        const { user_id } = req.query;
 
         // Check if project exists
         const projectCheck = await pool.query(
@@ -347,22 +353,45 @@ router.get('/', async (req, res) => {
             });
         }
 
-        // Fetch all tasks with assignees and metadata
-        const query = `
-            SELECT 
-                t.*,
-                tl.name as list_name,
-                COUNT(DISTINCT ta.user_id) as assignee_count,
-                (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title
-            FROM project.tasks t
-            LEFT JOIN project.task_lists tl ON t.list_id = tl.id
-            LEFT JOIN project.task_assignees ta ON t.id = ta.task_id
-            WHERE t.project_id = $1
-            GROUP BY t.id, tl.name
-            ORDER BY t.position ASC, t.created_at DESC
-        `;
+        let query, queryParams;
+        
+        if (user_id) {
+            // Employee view: Get only tasks assigned to this user
+            query = `
+                SELECT DISTINCT
+                    t.*,
+                    tl.name as list_name,
+                    COUNT(DISTINCT ta.user_id) as assignee_count,
+                    (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title
+                FROM project.tasks t
+                LEFT JOIN project.task_lists tl ON t.list_id = tl.id
+                LEFT JOIN project.task_assignees ta ON t.id = ta.task_id
+                INNER JOIN project.task_assignees ta_filter ON t.id = ta_filter.task_id
+                WHERE t.project_id = $1 
+                  AND ta_filter.user_id = $2
+                GROUP BY t.id, tl.name
+                ORDER BY t.position ASC, t.created_at DESC
+            `;
+            queryParams = [projectId, user_id];
+        } else {
+            // Manager view: Get all tasks
+            query = `
+                SELECT 
+                    t.*,
+                    tl.name as list_name,
+                    COUNT(DISTINCT ta.user_id) as assignee_count,
+                    (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title
+                FROM project.tasks t
+                LEFT JOIN project.task_lists tl ON t.list_id = tl.id
+                LEFT JOIN project.task_assignees ta ON t.id = ta.task_id
+                WHERE t.project_id = $1
+                GROUP BY t.id, tl.name
+                ORDER BY t.position ASC, t.created_at DESC
+            `;
+            queryParams = [projectId];
+        }
 
-        const result = await pool.query(query, [projectId]);
+        const result = await pool.query(query, queryParams);
 
         res.status(200).json({
             success: true,

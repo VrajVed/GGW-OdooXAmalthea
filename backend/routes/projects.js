@@ -12,33 +12,69 @@ const { pool } = require('../config/database');
 
 // ============================================================================
 // GET /api/projects - Get all projects
+// Query Parameters:
+//   - user_id: Filter projects where user is a member (employee view)
 // ============================================================================
 router.get('/', async (req, res) => {
     try {
-        const query = `
-            SELECT 
-                p.id,
-                p.name,
-                p.description,
-                p.status,
-                p.start_date as start,
-                p.end_date as due,
-                p.progress_pct as progress,
-                p.tags,
-                p.color,
-                p.extra,
-                u.full_name as manager_name,
-                u.email as manager_email,
-                (SELECT COUNT(*) FROM project.tasks t WHERE t.project_id = p.id) as tasks,
-                p.created_at,
-                p.updated_at
-            FROM project.projects p
-            LEFT JOIN auth.users u ON p.manager_user_id = u.id
-            WHERE p.archived_at IS NULL
-            ORDER BY p.created_at DESC
-        `;
+        const { user_id } = req.query;
         
-        const result = await pool.query(query);
+        let query, queryParams = [];
+        
+        if (user_id) {
+            // Employee view: Get only projects where user is a member
+            query = `
+                SELECT DISTINCT
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.status,
+                    p.start_date as start,
+                    p.end_date as due,
+                    p.progress_pct as progress,
+                    p.tags,
+                    p.color,
+                    p.extra,
+                    u.full_name as manager_name,
+                    u.email as manager_email,
+                    (SELECT COUNT(*) FROM project.tasks t WHERE t.project_id = p.id) as tasks,
+                    p.created_at,
+                    p.updated_at
+                FROM project.projects p
+                LEFT JOIN auth.users u ON p.manager_user_id = u.id
+                INNER JOIN project.project_members pm ON pm.project_id = p.id
+                WHERE p.archived_at IS NULL 
+                  AND pm.user_id = $1
+                ORDER BY p.created_at DESC
+            `;
+            queryParams = [user_id];
+        } else {
+            // Manager view: Get all projects
+            query = `
+                SELECT 
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.status,
+                    p.start_date as start,
+                    p.end_date as due,
+                    p.progress_pct as progress,
+                    p.tags,
+                    p.color,
+                    p.extra,
+                    u.full_name as manager_name,
+                    u.email as manager_email,
+                    (SELECT COUNT(*) FROM project.tasks t WHERE t.project_id = p.id) as tasks,
+                    p.created_at,
+                    p.updated_at
+                FROM project.projects p
+                LEFT JOIN auth.users u ON p.manager_user_id = u.id
+                WHERE p.archived_at IS NULL
+                ORDER BY p.created_at DESC
+            `;
+        }
+        
+        const result = await pool.query(query, queryParams);
         
         // Transform database records to match frontend format
         const projects = result.rows.map(row => ({
