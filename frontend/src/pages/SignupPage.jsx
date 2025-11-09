@@ -11,8 +11,7 @@ export default function SignupPage() {
     firstName: '',
     lastName: '',
     workEmail: '',
-    password: '',
-    role: 'user'
+    password: ''
   })
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [loading, setLoading] = useState(false)

@@ -38,8 +38,14 @@ export default function LoginPage() {
         // Store user data in localStorage
         saveUser(data.data.user)
         
-        // Navigate to app
-        navigate('/app')
+        // Navigate based on user role
+        const userRole = data.data.user.role
+        if (userRole === 'project_manager' || userRole === 'admin') {
+          navigate('/app')
+        } else {
+          // For team_member, finance, or any other role
+          navigate('/employee')
+        }
       } else {
         setError(data.message || 'Login failed. Please try again.')
       }

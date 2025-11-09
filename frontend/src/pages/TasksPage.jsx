@@ -338,6 +338,7 @@ function TasksPage() {
         priority: updatedTask.priority || 'medium',
         due_date: updatedTask.deadline || null,
         labels: updatedTask.tags || [],
+        assignee: updatedTask.assignee || null, // Include assignee
       }
 
       // Check if updating (UUID format: has dashes and is 36 chars) or creating (numeric timestamp)
