@@ -1,8 +1,9 @@
-# GGW Odoo x Amalthea - Project Management System
+# GGW Odoo x Amalthea - ONE FLOW - Plan to bill in one place
 
 ## Video link
 
 [https://www.kapwing.com/w/rjFr5a5_AE](https://www.kapwing.com/w/rjFr5a5_AE)
+Updated youtube link - [https://youtu.be/aYhAOFEMd7s](https://youtu.be/aYhAOFEMd7s)
 
 
 A full-stack project management application with Kanban board, built with React + Vite frontend and Node.js + Express + PostgreSQL backend.
