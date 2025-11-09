@@ -4,8 +4,7 @@
 
 [https://www.kapwing.com/w/rjFr5a5_AE](https://www.kapwing.com/w/rjFr5a5_AE)
 
-Updated youtube link - [https://youtu.be/aYhAOFEMd7s](https://youtu.be/aYhAOFEMd7s)
-
+Updated youtube link - [https://youtu.be/V80xXoi-kl0?si=Pp4_VB2qHIad2c9y]
 
 A full-stack project management application with Kanban board, built with React + Vite frontend and Node.js + Express + PostgreSQL backend.
 
