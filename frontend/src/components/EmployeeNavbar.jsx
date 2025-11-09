@@ -58,7 +58,17 @@ function EmployeeNavbar() {
   }
 
   const getUserRole = () => {
-    return 'Employee'
+    if (!user?.role) return 'Employee'
+    
+    // Format role for display
+    const roleMap = {
+      'admin': 'Admin',
+      'project_manager': 'Project Manager',
+      'team_member': 'Employee',
+      'finance': 'Finance'
+    }
+    
+    return roleMap[user.role] || user.role
   }
 
   const isActive = (path) => {

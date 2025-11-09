@@ -60,8 +60,8 @@ router.post('/register', async (req, res) => {
         }
         
         // Validate role if provided
-        const validRoles = ['admin', 'manager', 'user', 'guest'];
-        const userRole = role || 'user';
+        const validRoles = ['admin', 'project_manager', 'team_member', 'finance'];
+        const userRole = role || 'team_member';
         if (!validRoles.includes(userRole)) {
             return res.status(400).json({
                 success: false,
@@ -114,7 +114,7 @@ router.post('/register', async (req, res) => {
         const insertQuery = `
             INSERT INTO auth.users (org_id, full_name, email, password_hash, is_active)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, email, full_name, is_active, created_at
+            RETURNING id, org_id, email, full_name, is_active, created_at
         `;
         
         const fullName = `${firstName.trim()} ${lastName.trim()}`;
@@ -128,6 +128,23 @@ router.post('/register', async (req, res) => {
         ];
         
         const result = await query(insertQuery, values);
+        const userId = result.rows[0].id;
+        
+        // ========================================
+        // Insert User Role
+        // ========================================
+        const roleInsertQuery = `
+            INSERT INTO auth.user_roles (org_id, user_id, role)
+            VALUES ($1, $2, $3)
+        `;
+        
+        await query(roleInsertQuery, [orgId, userId, userRole]);
+        
+        // Add role to returned user data
+        const userData = {
+            ...result.rows[0],
+            role: userRole
+        };
         
         // ========================================
         // Success Response (Never return password)
@@ -136,7 +153,7 @@ router.post('/register', async (req, res) => {
             success: true,
             message: 'User registered successfully',
             data: {
-                user: result.rows[0]
+                user: userData
             }
         });
         
@@ -190,11 +207,24 @@ router.post('/login', async (req, res) => {
             });
         }
         
-        // Fetch user from database
+        // Fetch user from database with role information
         const selectQuery = `
-            SELECT id, org_id, email, full_name, password_hash, is_active
-            FROM auth.users
-            WHERE email = $1
+            SELECT 
+                u.id, 
+                u.org_id, 
+                u.email, 
+                u.full_name, 
+                u.password_hash, 
+                u.is_active,
+                COALESCE(
+                    (SELECT ur.role 
+                     FROM auth.user_roles ur 
+                     WHERE ur.user_id = u.id 
+                     LIMIT 1), 
+                    'team_member'
+                ) as role
+            FROM auth.users u
+            WHERE u.email = $1
         `;
         
         const result = await query(selectQuery, [workEmail.toLowerCase().trim()]);
@@ -266,11 +296,21 @@ router.post('/login', async (req, res) => {
  */
 router.get('/', async (req, res) => {
     try {
-        // Using the safe view that excludes passwords
+        // Using the safe view that excludes passwords and includes role
         const selectQuery = `
-            SELECT id, org_id, email, full_name, is_active, created_at, updated_at
-            FROM auth.users
-            ORDER BY created_at DESC
+            SELECT 
+                u.id, 
+                u.org_id, 
+                u.email, 
+                u.full_name, 
+                u.is_active, 
+                u.created_at, 
+                u.updated_at,
+                COALESCE(ur.role::text, 'team_member') as role
+            FROM auth.users u
+            LEFT JOIN auth.user_roles ur ON u.id = ur.user_id
+            WHERE u.is_active = true
+            ORDER BY u.full_name ASC
         `;
         
         const result = await query(selectQuery);

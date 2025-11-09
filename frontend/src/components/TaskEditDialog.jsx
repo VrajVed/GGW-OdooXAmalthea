@@ -1,16 +1,6 @@
 import { X, Upload, Trash2, Plus, ChevronDown } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-
-// Dummy database of available assignees
-const AVAILABLE_ASSIGNEES = [
-  { id: 1, name: 'Alex User', initials: 'AU', email: 'alex@example.com' },
-  { id: 2, name: 'Floyd Miles', initials: 'FM', email: 'floyd@example.com' },
-  { id: 3, name: 'Dianne Russell', initials: 'DR', email: 'dianne@example.com' },
-  { id: 4, name: 'Annette Black', initials: 'AB', email: 'annette@example.com' },
-  { id: 5, name: 'Unknown User', initials: 'U', email: 'unknown@example.com' },
-  { id: 6, name: 'Frank Edward', initials: 'FE', email: 'frank@example.com' },
-  { id: 7, name: 'James Wong', initials: 'JW', email: 'james@example.com' },
-]
+import { userApi } from '../lib/api'
 
 function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
   const [activeTab, setActiveTab] = useState('description')
@@ -30,9 +20,49 @@ function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
   const [currentSessionStart, setCurrentSessionStart] = useState(null)
   const [elapsedTime, setElapsedTime] = useState(0)
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false)
+  const [availableAssignees, setAvailableAssignees] = useState([])
+  const [loadingUsers, setLoadingUsers] = useState(false)
   const timerRef = useRef(null)
   const fileInputRef = useRef(null)
   const assigneeDropdownRef = useRef(null)
+
+  // Fetch real users from the database
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true)
+        const response = await userApi.getAll()
+        if (response.success) {
+          // Transform users to match the format needed for the dropdown
+          const users = response.data.users.map(user => {
+            const nameParts = user.full_name.trim().split(' ')
+            const initials = nameParts.length === 1 
+              ? nameParts[0].charAt(0).toUpperCase()
+              : (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase()
+            
+            return {
+              id: user.id,
+              name: user.full_name,
+              initials: initials,
+              email: user.email,
+              role: user.role
+            }
+          })
+          setAvailableAssignees(users)
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error)
+        // Fallback to empty array if fetch fails
+        setAvailableAssignees([])
+      } finally {
+        setLoadingUsers(false)
+      }
+    }
+
+    if (isOpen) {
+      fetchUsers()
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (task) {
@@ -277,29 +307,39 @@ function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
                 
                 {showAssigneeDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
-                    {AVAILABLE_ASSIGNEES.map((assignee) => (
-                      <button
-                        key={assignee.id}
-                        type="button"
-                        onClick={() => handleSelectAssignee(assignee)}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors"
-                      >
-                        <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-semibold text-white">
-                            {assignee.initials}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">{assignee.name}</p>
-                          <p className="text-xs text-gray-500">{assignee.email}</p>
-                        </div>
-                        {formData.assignee === assignee.name && (
-                          <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
+                    {loadingUsers ? (
+                      <div className="px-4 py-3 text-center text-gray-500">
+                        Loading users...
+                      </div>
+                    ) : availableAssignees.length === 0 ? (
+                      <div className="px-4 py-3 text-center text-gray-500">
+                        No users available
+                      </div>
+                    ) : (
+                      availableAssignees.map((assignee) => (
+                        <button
+                          key={assignee.id}
+                          type="button"
+                          onClick={() => handleSelectAssignee(assignee)}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                        >
+                          <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-xs font-semibold text-white">
+                              {assignee.initials}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900">{assignee.name}</p>
+                            <p className="text-xs text-gray-500">{assignee.email}</p>
+                          </div>
+                          {formData.assignee === assignee.name && (
+                            <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                      ))
+                    )}
                   </div>
                 )}
               </div>
