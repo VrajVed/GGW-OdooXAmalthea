@@ -13,3 +13,8 @@ node_modules/
 /.env
 !frontend/src/images/logo.png
 !**/logo.png
+
+# Prevent nested project folders from being committed
+ggw-oodo-x-amalthea/
+GGW-OdooXAmalthea*/
+*.zip
