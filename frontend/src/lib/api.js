@@ -28,35 +28,7 @@ export const API_ENDPOINTS = {
   }
 }
 
-// Helper function for API calls
-export const apiCall = async (endpoint, options = {}) => {
-  const url = `${API_BASE_URL}${endpoint}`
-  
-  const defaultOptions = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }
-
-  try {
-    const response = await fetch(url, {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...options.headers,
-      },
-    })
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error('API call error:', error)
-    throw error
-  }
-}
-
-// Auth helpers
+// Auth helpers (must be defined before apiCall uses them)
 export const saveUser = (user) => {
   localStorage.setItem('user', JSON.stringify(user))
 }
@@ -66,12 +38,109 @@ export const getUser = () => {
   return user ? JSON.parse(user) : null
 }
 
+export const saveToken = (token) => {
+  localStorage.setItem('token', token)
+}
+
+export const getToken = () => {
+  return localStorage.getItem('token')
+}
+
 export const removeUser = () => {
   localStorage.removeItem('user')
+  localStorage.removeItem('token')
+}
+
+// Helper function for API calls
+export const apiCall = async (endpoint, options = {}) => {
+  const url = `${API_BASE_URL}${endpoint}`
+  
+  // Get token from localStorage
+  const token = getToken()
+  
+  const defaultOptions = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+
+  // Add Authorization header if token exists
+  if (token) {
+    defaultOptions.headers['Authorization'] = `Bearer ${token}`
+  } else {
+    // Log warning if token is missing for protected routes
+    // (excluding public routes like /api/users/login and /api/users/register)
+    if (!endpoint.includes('/users/login') && !endpoint.includes('/users/register')) {
+      console.warn('API call without token:', endpoint)
+    }
+  }
+
+  try {
+    // Add cache-busting timestamp for GET requests to ensure fresh data
+    let finalUrl = url
+    if ((options.method === 'GET' || !options.method) && url) {
+      // Simple approach: just append the timestamp parameter
+      const separator = url.includes('?') ? '&' : '?'
+      finalUrl = `${url}${separator}_t=${Date.now()}`
+    }
+    
+    const response = await fetch(finalUrl, {
+      ...defaultOptions,
+      ...options,
+      headers: {
+        ...defaultOptions.headers,
+        ...options.headers,
+      },
+    })
+
+    // Handle 401 Unauthorized - token expired or invalid
+    if (response.status === 401) {
+      // Only redirect if not already on login page
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        removeUser()
+        window.location.href = '/login'
+      }
+      
+      // Try to parse error message from response
+      let errorMessage = 'Authentication required. Please login again.'
+      try {
+        const errorData = await response.clone().json()
+        errorMessage = errorData.message || errorMessage
+      } catch (e) {
+        // If response is not JSON, use default message
+      }
+      
+      throw new Error(errorMessage)
+    }
+
+    // Check if response is ok before parsing JSON
+    if (!response.ok) {
+      let errorMessage = `Request failed with status ${response.status}`
+      try {
+        const errorData = await response.clone().json()
+        errorMessage = errorData.message || errorMessage
+      } catch (e) {
+        // If response is not JSON, try to get text
+        try {
+          const text = await response.clone().text()
+          errorMessage = text || errorMessage
+        } catch (e2) {
+          // Use default error message
+        }
+      }
+      throw new Error(errorMessage)
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('API call error:', error)
+    throw error
+  }
 }
 
 export const isAuthenticated = () => {
-  return !!getUser()
+  return !!getUser() && !!getToken()
 }
 
 // Project API functions
@@ -91,8 +160,15 @@ export const projectApi = {
   },
 
   // Get single project
-  getById: async (id) => {
-    return await apiCall(`${API_ENDPOINTS.projects}/${id}`, {
+  getById: async (id, filters = {}) => {
+    const queryParams = new URLSearchParams()
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryParams.append(key, filters[key])
+      }
+    })
+    const queryString = queryParams.toString()
+    return await apiCall(`${API_ENDPOINTS.projects}/${id}${queryString ? '?' + queryString : ''}`, {
       method: 'GET',
     })
   },
@@ -223,11 +299,55 @@ export const expensesApi = {
     formData.append('receipt', file)
     const url = `${API_BASE_URL}${API_ENDPOINTS.expenses}/upload-receipt`
     
+    // Get token from localStorage
+    const token = getToken()
+    
+    // Build headers
+    const headers = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    
     try {
       const response = await fetch(url, {
         method: 'POST',
+        headers: headers,
         body: formData,
       })
+      
+      // Handle 401 Unauthorized
+      if (response.status === 401) {
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+          removeUser()
+          window.location.href = '/login'
+        }
+        let errorMessage = 'Authentication required. Please login again.'
+        try {
+          const errorData = await response.clone().json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          // If response is not JSON, use default message
+        }
+        throw new Error(errorMessage)
+      }
+      
+      // Check if response is ok
+      if (!response.ok) {
+        let errorMessage = `Request failed with status ${response.status}`
+        try {
+          const errorData = await response.clone().json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          try {
+            const text = await response.clone().text()
+            errorMessage = text || errorMessage
+          } catch (e2) {
+            // Use default error message
+          }
+        }
+        throw new Error(errorMessage)
+      }
+      
       const data = await response.json()
       return data
     } catch (error) {

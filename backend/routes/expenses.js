@@ -84,6 +84,32 @@ router.get('/', async (req, res) => {
             // Continue without org_id filter - will return all expenses
         }
 
+        // ========================================================================
+        // AUTHORIZATION CHECK: Employees can only see their own expenses
+        // ========================================================================
+        let userRole = null;
+        let currentUserId = req.user?.id || user_id;
+        
+        if (currentUserId) {
+            try {
+                const roleQuery = await pool.query(
+                    'SELECT role FROM auth.users WHERE id = $1',
+                    [currentUserId]
+                );
+                if (roleQuery.rows.length > 0) {
+                    userRole = roleQuery.rows[0].role;
+                }
+            } catch (roleError) {
+                console.warn('Could not determine user role:', roleError.message);
+            }
+        }
+
+        // If user is an employee (team_member), enforce user_id filter
+        if (userRole === 'team_member' && currentUserId) {
+            // Override any user_id in query params - employees can only see their own
+            user_id = currentUserId;
+        }
+
         // Build WHERE clause dynamically
         const conditions = [];
         const params = [];
@@ -541,10 +567,26 @@ router.post('/', async (req, res) => {
         } = req.body;
 
         // Validate required fields
+        if (!project_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Project is required. Expenses must be linked to a project.'
+            });
+        }
+        
         if (!category || !amount || !spent_on) {
             return res.status(400).json({
                 success: false,
                 message: 'Category, amount, and spent_on are required'
+            });
+        }
+        
+        // Verify project exists
+        const projectCheck = await pool.query('SELECT id FROM project.projects WHERE id = $1 AND archived_at IS NULL', [project_id]);
+        if (projectCheck.rows.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid project. Project not found or has been archived.'
             });
         }
 
@@ -601,7 +643,7 @@ router.post('/', async (req, res) => {
 
         const values = [
             orgId,
-            project_id || null,
+            project_id, // Now required, no longer nullable
             expenseUserId,
             category,
             parseFloat(amount),
@@ -686,7 +728,7 @@ router.put('/:id', async (req, res) => {
         } = req.body;
 
         // Check if expense exists and can be edited
-        const checkQuery = 'SELECT id, status FROM finance.expenses WHERE id = $1';
+        const checkQuery = 'SELECT id, status, user_id FROM finance.expenses WHERE id = $1';
         const checkResult = await pool.query(checkQuery, [id]);
 
         if (checkResult.rows.length === 0) {
@@ -696,12 +738,63 @@ router.put('/:id', async (req, res) => {
             });
         }
 
-        const currentStatus = checkResult.rows[0].status;
+        const expense = checkResult.rows[0];
+        const currentStatus = expense.status;
+        
+        // ========================================================================
+        // AUTHORIZATION CHECK: Employees can only edit their own expenses
+        // ========================================================================
+        let userRole = null;
+        let currentUserId = req.user?.id;
+        
+        if (currentUserId) {
+            try {
+                const roleQuery = await pool.query(
+                    'SELECT role FROM auth.users WHERE id = $1',
+                    [currentUserId]
+                );
+                if (roleQuery.rows.length > 0) {
+                    userRole = roleQuery.rows[0].role;
+                }
+            } catch (roleError) {
+                console.warn('Could not determine user role:', roleError.message);
+            }
+        }
+
+        // If user is an employee, verify they own this expense
+        if (userRole === 'team_member' && currentUserId) {
+            if (expense.user_id !== currentUserId) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied. You can only edit your own expenses.'
+                });
+            }
+        }
+
         if (currentStatus === 'approved' && !req.body.force) {
             return res.status(400).json({
                 success: false,
                 message: 'Cannot edit approved expense'
             });
+        }
+        
+        // Validate project_id if provided (required for updates)
+        if (project_id !== undefined) {
+            if (!project_id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Project is required. Expenses must be linked to a project.'
+                });
+            }
+            
+            // Verify project exists
+            const projectCheck = await pool.query('SELECT id FROM project.projects WHERE id = $1 AND archived_at IS NULL', [project_id]);
+            if (projectCheck.rows.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid project. Project not found or has been archived.'
+                });
+            }
         }
 
         const updateFields = [];
@@ -709,8 +802,9 @@ router.put('/:id', async (req, res) => {
         let paramIndex = 1;
 
         if (project_id !== undefined) {
+            // project_id already validated above, just add to update
             updateFields.push(`project_id = $${paramIndex++}`);
-            values.push(project_id || null);
+            values.push(project_id);
         }
         if (category !== undefined) {
             updateFields.push(`category = $${paramIndex++}`);
