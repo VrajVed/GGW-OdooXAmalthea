@@ -219,11 +219,21 @@ function TaskEditDialog({ task, project, isOpen, onClose, onSave }) {
   }
 
   const handleSave = () => {
+    // Ensure assignee_id is explicitly set (even if empty string, convert to null)
+    const assigneeId = formData.assignee && formData.assignee !== '' ? formData.assignee : null
+    
+    console.log('TaskEditDialog - Saving task with assignee:', {
+      formDataAssignee: formData.assignee,
+      formDataAssigneeName: formData.assigneeName,
+      assigneeId: assigneeId,
+      taskId: task?.id
+    })
+    
     const updatedTask = {
       ...task,
       ...formData,
-      assignee_id: formData.assignee,  // Send user ID to backend
-      assignee_name: formData.assigneeName,  // Keep name for display
+      assignee_id: assigneeId,  // Send user ID to backend (null if not selected)
+      assignee_name: formData.assigneeName || null,  // Keep name for display
       timesheets,
       lastModified: new Date().toISOString(),
       lastModifiedBy: formData.assigneeName || formData.assignee || 'Current User',

@@ -338,8 +338,17 @@ function TasksPage() {
         priority: updatedTask.priority || 'medium',
         due_date: updatedTask.deadline || null,
         labels: updatedTask.tags || [],
-        assignee_id: updatedTask.assignee_id || updatedTask.assignee || null, // Send user ID to backend
+        // Send assignee_id - use the assignee_id from formData (which comes from TaskEditDialog)
+        // Only use updatedTask.assignee_id if formData doesn't have one
+        assignee_id: updatedTask.assignee_id || null,
       }
+      
+      console.log('Task data being sent:', {
+        ...taskData,
+        assignee_id: taskData.assignee_id,
+        original_assignee: updatedTask.assignee,
+        original_assignee_id: updatedTask.assignee_id
+      })
 
       // Check if updating (UUID format: has dashes and is 36 chars) or creating (numeric timestamp)
       const taskIdStr = String(updatedTask.id)

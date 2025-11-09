@@ -67,10 +67,24 @@ export const apiCall = async (endpoint, options = {}) => {
   // Add Authorization header if token exists
   if (token) {
     defaultOptions.headers['Authorization'] = `Bearer ${token}`
+  } else {
+    // Log warning if token is missing for protected routes
+    // (excluding public routes like /api/users/login and /api/users/register)
+    if (!endpoint.includes('/users/login') && !endpoint.includes('/users/register')) {
+      console.warn('API call without token:', endpoint)
+    }
   }
 
   try {
-    const response = await fetch(url, {
+    // Add cache-busting timestamp for GET requests to ensure fresh data
+    let finalUrl = url
+    if ((options.method === 'GET' || !options.method) && url) {
+      // Simple approach: just append the timestamp parameter
+      const separator = url.includes('?') ? '&' : '?'
+      finalUrl = `${url}${separator}_t=${Date.now()}`
+    }
+    
+    const response = await fetch(finalUrl, {
       ...defaultOptions,
       ...options,
       headers: {
@@ -81,12 +95,40 @@ export const apiCall = async (endpoint, options = {}) => {
 
     // Handle 401 Unauthorized - token expired or invalid
     if (response.status === 401) {
-      removeUser()
-      // Redirect to login if we're in the browser
-      if (typeof window !== 'undefined') {
+      // Only redirect if not already on login page
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        removeUser()
         window.location.href = '/login'
       }
-      throw new Error('Authentication required. Please login again.')
+      
+      // Try to parse error message from response
+      let errorMessage = 'Authentication required. Please login again.'
+      try {
+        const errorData = await response.clone().json()
+        errorMessage = errorData.message || errorMessage
+      } catch (e) {
+        // If response is not JSON, use default message
+      }
+      
+      throw new Error(errorMessage)
+    }
+
+    // Check if response is ok before parsing JSON
+    if (!response.ok) {
+      let errorMessage = `Request failed with status ${response.status}`
+      try {
+        const errorData = await response.clone().json()
+        errorMessage = errorData.message || errorMessage
+      } catch (e) {
+        // If response is not JSON, try to get text
+        try {
+          const text = await response.clone().text()
+          errorMessage = text || errorMessage
+        } catch (e2) {
+          // Use default error message
+        }
+      }
+      throw new Error(errorMessage)
     }
 
     const data = await response.json()
@@ -257,11 +299,55 @@ export const expensesApi = {
     formData.append('receipt', file)
     const url = `${API_BASE_URL}${API_ENDPOINTS.expenses}/upload-receipt`
     
+    // Get token from localStorage
+    const token = getToken()
+    
+    // Build headers
+    const headers = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    
     try {
       const response = await fetch(url, {
         method: 'POST',
+        headers: headers,
         body: formData,
       })
+      
+      // Handle 401 Unauthorized
+      if (response.status === 401) {
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+          removeUser()
+          window.location.href = '/login'
+        }
+        let errorMessage = 'Authentication required. Please login again.'
+        try {
+          const errorData = await response.clone().json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          // If response is not JSON, use default message
+        }
+        throw new Error(errorMessage)
+      }
+      
+      // Check if response is ok
+      if (!response.ok) {
+        let errorMessage = `Request failed with status ${response.status}`
+        try {
+          const errorData = await response.clone().json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          try {
+            const text = await response.clone().text()
+            errorMessage = text || errorMessage
+          } catch (e2) {
+            // Use default error message
+          }
+        }
+        throw new Error(errorMessage)
+      }
+      
       const data = await response.json()
       return data
     } catch (error) {
