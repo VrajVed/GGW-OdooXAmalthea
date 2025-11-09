@@ -322,6 +322,64 @@ router.post('/', async (req, res) => {
         const result = await pool.query(query, values);
         const newProject = result.rows[0];
 
+        // ========================================================================
+        // ADD PROJECT MANAGER AS PROJECT MEMBER (if manager exists)
+        // ========================================================================
+        // WHY: Employees can only see projects they are members of
+        // The project manager should automatically be a member
+        if (managerUserId) {
+            try {
+                await pool.query(
+                    `INSERT INTO project.project_members (org_id, project_id, user_id, role)
+                     VALUES ($1, $2, $3, 'project_manager')
+                     ON CONFLICT (project_id, user_id) DO NOTHING`,
+                    [orgId, newProject.id, managerUserId]
+                );
+                console.log('Project manager added as member:', {
+                    projectId: newProject.id,
+                    managerId: managerUserId
+                });
+            } catch (memberError) {
+                console.error('Error adding project manager as member:', memberError);
+                // Don't fail the request, but log the error
+            }
+        }
+
+        // ========================================================================
+        // ADD CURRENT USER AS PROJECT MEMBER (whoever created the project)
+        // ========================================================================
+        // Get current user from request (if authenticated)
+        // This ensures the creator can always see the project they created
+        const currentUserId = req.user?.id;
+        if (currentUserId) {
+            try {
+                // Get user's role from auth.users table
+                const userRoleQuery = await pool.query(
+                    'SELECT role FROM auth.users WHERE id = $1',
+                    [currentUserId]
+                );
+                // Map auth.users.role to project.project_members.role
+                // auth.users.role can be: 'admin', 'project_manager', 'team_member'
+                // project.project_members.role uses auth.role_type which should match
+                const userRole = userRoleQuery.rows[0]?.role || 'team_member';
+                
+                await pool.query(
+                    `INSERT INTO project.project_members (org_id, project_id, user_id, role)
+                     VALUES ($1, $2, $3, $4)
+                     ON CONFLICT (project_id, user_id) DO NOTHING`,
+                    [orgId, newProject.id, currentUserId, userRole]
+                );
+                console.log('Current user added as project member:', {
+                    projectId: newProject.id,
+                    userId: currentUserId,
+                    role: userRole
+                });
+            } catch (memberError) {
+                console.error('Error adding current user as member:', memberError);
+                // Don't fail the request, but log the error
+            }
+        }
+
         res.status(201).json({
             success: true,
             message: 'Project created successfully',

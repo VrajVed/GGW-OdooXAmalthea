@@ -13,7 +13,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Calendar, Link2, Unlink, Loader2 } from 'lucide-react'
-import { calendarApi, getUser } from '../lib/api'
+import { calendarApi, getUser, getToken } from '../lib/api'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -44,6 +44,14 @@ export default function CalendarPage() {
     if (!userId) {
       setLoading(false)
       setError('Please log in to view your calendar')
+      return
+    }
+    
+    // Check if user has a token
+    const token = getToken()
+    if (!token) {
+      setLoading(false)
+      setError('Authentication required. Please log in again.')
       return
     }
     
@@ -83,6 +91,13 @@ export default function CalendarPage() {
   const loadCalendars = useCallback(async () => {
     if (!userId) return
     
+    // Check if user has a token
+    const token = getToken()
+    if (!token) {
+      setError('Authentication required. Please log in again.')
+      return
+    }
+    
     try {
       const result = await calendarApi.getCalendars(userId)
       if (result.success) {
@@ -98,6 +113,13 @@ export default function CalendarPage() {
 
   const loadEvents = useCallback(async (dateRange = null) => {
     if (!userId) return
+    
+    // Check if user has a token
+    const token = getToken()
+    if (!token) {
+      setError('Authentication required. Please log in again.')
+      return
+    }
     
     // Prevent concurrent loading
     if (isLoadingEventsRef.current) {
@@ -165,6 +187,13 @@ export default function CalendarPage() {
     try {
       if (!userId) {
         setError('User not found. Please log in again.')
+        return
+      }
+
+      // Check if user has a token
+      const token = getToken()
+      if (!token) {
+        setError('Authentication required. Please log in again.')
         return
       }
 

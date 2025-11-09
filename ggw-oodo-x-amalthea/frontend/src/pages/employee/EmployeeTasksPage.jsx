@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Plus } from 'lucide-react'
 import KanbanColumn from '../../components/KanbanColumn'
 import TaskModal from '../../components/TaskModal'
@@ -16,18 +16,44 @@ function EmployeeTasksPage() {
   const [allTasks, setAllTasks] = useState({ new: [], inProgress: [], done: [] })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const pollingIntervalRef = useRef(null)
 
   const currentUser = getUser()
 
-  // Load data on mount
+  // Load data on mount and set up polling
   useEffect(() => {
     loadData()
+    
+    // Set up polling to refresh tasks every 2 seconds for real-time updates
+    // This ensures employees see new tasks immediately after project manager creates them
+    pollingIntervalRef.current = setInterval(() => {
+      console.log('Polling: Refreshing tasks from database...', new Date().toISOString())
+      loadData(false) // Don't show loading spinner during polling
+    }, 2000)
+    
+    // Cleanup on unmount
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+      }
+    }
   }, [])
 
   // Fetch projects and tasks from backend - filter by current user
-  const loadData = async () => {
+  const loadData = async (showLoading = true) => {
     try {
-      setLoading(true)
+      // Check if user is authenticated
+      if (!currentUser?.id) {
+        console.warn('User not authenticated, skipping data load')
+        if (showLoading) {
+          setLoading(false)
+        }
+        return
+      }
+
+      if (showLoading) {
+        setLoading(true)
+      }
       
       // 1. Get only projects where user is a member
       const projectFilters = currentUser?.id ? { user_id: currentUser.id } : {}
@@ -41,10 +67,28 @@ function EmployeeTasksPage() {
 
       // 2. Get tasks for each project - FILTERED by current user
       const taskFilters = currentUser?.id ? { user_id: currentUser.id } : {}
+      
+      console.log('Loading tasks for employee (fresh from DB):', {
+        userId: currentUser?.id,
+        projectCount: projectsList.length,
+        timestamp: new Date().toISOString()
+      })
+      
       const tasksPromises = projectsList.map(project => 
         taskApi.getAll(project.id, taskFilters)
       )
       const tasksResponses = await Promise.all(tasksPromises)
+      
+      // Log task counts for debugging
+      let totalTasks = 0
+      tasksResponses.forEach((response, index) => {
+        if (response.success) {
+          const taskCount = response.data?.length || 0
+          totalTasks += taskCount
+          console.log(`Project ${projectsList[index].name}: ${taskCount} tasks assigned to employee`)
+        }
+      })
+      console.log(`Total tasks loaded: ${totalTasks}`)
 
       // 3. Organize tasks by state - Group by project
       const organized = { new: [], inProgress: [], done: [] }
@@ -127,12 +171,17 @@ function EmployeeTasksPage() {
       })
 
       setAllTasks(organized)
-      setLoading(false)
+      setError(null)
+      if (showLoading) {
+        setLoading(false)
+      }
       
     } catch (err) {
       console.error('Error loading data:', err)
       setError(err.message)
-      setLoading(false)
+      if (showLoading) {
+        setLoading(false)
+      }
     }
   }
 

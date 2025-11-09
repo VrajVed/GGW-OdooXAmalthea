@@ -267,16 +267,24 @@ router.post('/', async (req, res) => {
         // ========================================================================
         if (assignee_id) {
             try {
-                await pool.query(
+                const assignResult = await pool.query(
                     `INSERT INTO project.task_assignees (org_id, task_id, user_id)
                      VALUES ($1, $2, $3)
-                     ON CONFLICT (task_id, user_id) DO NOTHING`,
+                     ON CONFLICT (task_id, user_id) DO NOTHING
+                     RETURNING *`,
                     [orgId, newTask.id, assignee_id]
                 );
+                console.log('Task assigned to user:', {
+                    taskId: newTask.id,
+                    assigneeId: assignee_id,
+                    assigned: assignResult.rows.length > 0
+                });
             } catch (assignError) {
                 console.error('Error assigning task to user:', assignError);
                 // Don't fail the entire request if assignment fails, but log it
             }
+        } else {
+            console.log('No assignee_id provided for task:', newTask.id);
         }
 
         // ========================================================================
@@ -377,6 +385,13 @@ router.get('/', async (req, res) => {
         const projectId = req.params.id;
         const { user_id } = req.query;
 
+        // Log request for debugging
+        console.log('GET tasks request:', {
+            projectId,
+            user_id,
+            timestamp: new Date().toISOString()
+        });
+
         // Check if project exists
         const projectCheck = await pool.query(
             'SELECT id FROM project.projects WHERE id = $1 AND archived_at IS NULL',
@@ -399,7 +414,11 @@ router.get('/', async (req, res) => {
                     t.*,
                     tl.name as list_name,
                     COUNT(DISTINCT ta.user_id) as assignee_count,
-                    (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title
+                    (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title,
+                    (SELECT ta2.user_id FROM project.task_assignees ta2 WHERE ta2.task_id = t.id LIMIT 1) as assignee_id,
+                    (SELECT u.full_name FROM project.task_assignees ta2 
+                     JOIN auth.users u ON u.id = ta2.user_id 
+                     WHERE ta2.task_id = t.id LIMIT 1) as assignee_name
                 FROM project.tasks t
                 LEFT JOIN project.task_lists tl ON t.list_id = tl.id
                 LEFT JOIN project.task_assignees ta ON t.id = ta.task_id
@@ -417,7 +436,11 @@ router.get('/', async (req, res) => {
                     t.*,
                     tl.name as list_name,
                     COUNT(DISTINCT ta.user_id) as assignee_count,
-                    (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title
+                    (SELECT title FROM project.tasks pt WHERE pt.id = t.parent_task_id) as parent_task_title,
+                    (SELECT ta2.user_id FROM project.task_assignees ta2 WHERE ta2.task_id = t.id LIMIT 1) as assignee_id,
+                    (SELECT u.full_name FROM project.task_assignees ta2 
+                     JOIN auth.users u ON u.id = ta2.user_id 
+                     WHERE ta2.task_id = t.id LIMIT 1) as assignee_name
                 FROM project.tasks t
                 LEFT JOIN project.task_lists tl ON t.list_id = tl.id
                 LEFT JOIN project.task_assignees ta ON t.id = ta.task_id
@@ -429,11 +452,25 @@ router.get('/', async (req, res) => {
         }
 
         const result = await pool.query(query, queryParams);
+        
+        // Log query results for debugging
+        console.log('Tasks query result:', {
+            projectId,
+            user_id: user_id || 'all',
+            taskCount: result.rows.length,
+            timestamp: new Date().toISOString()
+        });
 
+        // Set headers to prevent caching
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        
         res.status(200).json({
             success: true,
             data: result.rows,
-            count: result.rows.length
+            count: result.rows.length,
+            timestamp: new Date().toISOString() // Include timestamp to verify freshness
         });
 
     } catch (error) {
@@ -486,6 +523,41 @@ router.put('/:taskId', async (req, res) => {
 
         const task = taskCheck.rows[0];
         const orgId = task.org_id;
+
+        // ========================================================================
+        // AUTHORIZATION CHECK: Employees can only update tasks assigned to them
+        // ========================================================================
+        let userRole = null;
+        let currentUserId = req.user?.id || req.query.user_id;
+        
+        if (currentUserId) {
+            try {
+                const roleQuery = await pool.query(
+                    'SELECT role FROM auth.users WHERE id = $1',
+                    [currentUserId]
+                );
+                if (roleQuery.rows.length > 0) {
+                    userRole = roleQuery.rows[0].role;
+                }
+            } catch (roleError) {
+                console.warn('Could not determine user role:', roleError.message);
+            }
+        }
+
+        // If user is an employee, verify they are assigned to this task
+        if (userRole === 'team_member' && currentUserId) {
+            const assigneeCheck = await pool.query(
+                'SELECT id FROM project.task_assignees WHERE task_id = $1 AND user_id = $2',
+                [taskId, currentUserId]
+            );
+            
+            if (assigneeCheck.rows.length === 0) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied. This task is not assigned to you.'
+                });
+            }
+        }
 
         // Validate assignee if provided
         if (assignee_id !== undefined) {
