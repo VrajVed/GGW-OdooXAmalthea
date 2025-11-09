@@ -10,9 +10,9 @@ export default function AuthNavbar({ variant = 'login' }) {
       </div>
       <div>
         {variant === 'login' ? (
-          <Link to="/signup" className="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700">Sign Up</Link>
+          <Link to="/signup" className="px-4 py-2 rounded-md text-white hover:opacity-90" style={{ backgroundColor: '#714b67' }}>Sign Up</Link>
         ) : (
-          <Link to="/login" className="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700">Login</Link>
+          <Link to="/login" className="px-4 py-2 rounded-md text-white hover:opacity-90" style={{ backgroundColor: '#714b67' }}>Login</Link>
         )}
       </div>
     </header>
