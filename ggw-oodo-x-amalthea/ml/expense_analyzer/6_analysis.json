@@ -1,0 +1,28 @@
+{
+  "file": "6.jpg",
+  "timestamp": null,
+  "extracted_data": {
+    "amount": 15.54,
+    "currency": "$",
+    "date": "Mar 17, 19",
+    "vendor": "India360",
+    "category": "Restaurant",
+    "subtotal": 13.75,
+    "tax_amount": 1.79
+  },
+  "raw_text": null,
+  "metadata": {
+    "merchant_address": "2761 Markham Rd. Unit A1&A2\nScarborough, ON",
+    "transaction_time": "5:42 PM",
+    "line_items": [
+      {
+        "item_name": "Naan",
+        "item_quantity": 5,
+        "item_price": 13.75,
+        "item_total": 13.75
+      }
+    ],
+    "extraction_method": "llm_receipt_ocr",
+    "model_used": "gemini-2.0-flash-exp"
+  }
+}
