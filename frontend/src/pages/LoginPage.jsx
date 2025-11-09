@@ -60,10 +60,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-white">
       <AuthNavbar variant="login" />
-      <div className="flex items-center justify-center p-6">
-        <div className="max-w-md w-full">
+      <div className="flex items-center justify-center p-8">
+        <div className="max-w-xl w-full">
           <AuthBox title="Login into account">
-            <form className="space-y-2" onSubmit={handleSubmit}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
                   {error}
@@ -89,7 +89,7 @@ export default function LoginPage() {
                 required
               />
 
-              <div className="text-sm text-purple-600 mt-2">Forget password?</div>
+              <div className="text-sm mt-2" style={{ color: '#714b67' }}>Forget password?</div>
 
               <div className="pt-4">
                 <button 

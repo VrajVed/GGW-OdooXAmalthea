@@ -93,10 +93,10 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-white">
       <AuthNavbar variant="signup" />
-      <div className="flex items-center justify-center p-6">
+      <div className="flex items-center justify-center p-8">
         <div className="max-w-3xl w-full">
           <AuthBox title="Create an account">
-            <form className="space-y-2" onSubmit={handleSubmit}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
                   {error}
