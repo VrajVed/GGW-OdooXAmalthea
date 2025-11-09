@@ -1,0 +1,28 @@
+{
+  "file": "2.jpeg",
+  "timestamp": null,
+  "extracted_data": {
+    "amount": 18.0,
+    "currency": null,
+    "date": "2018-07-21",
+    "vendor": "McDonalds Family Restaurants",
+    "category": "Restaurant",
+    "subtotal": 17.14,
+    "tax_amount": 0.86
+  },
+  "raw_text": null,
+  "metadata": {
+    "merchant_address": "C.M.R CENTRAL, Pin-530013, Andhra Pradesh",
+    "transaction_time": "15:00:10",
+    "line_items": [
+      {
+        "item_name": "1 Soft Serve Cone",
+        "item_quantity": 1,
+        "item_price": 17.14,
+        "item_total": 17.14
+      }
+    ],
+    "extraction_method": "llm_receipt_ocr",
+    "model_used": "gemini-2.0-flash-exp"
+  }
+}

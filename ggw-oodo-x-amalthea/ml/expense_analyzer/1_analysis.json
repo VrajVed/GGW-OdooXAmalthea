@@ -1,0 +1,34 @@
+{
+  "file": "1.jpg",
+  "timestamp": null,
+  "extracted_data": {
+    "amount": 188.0,
+    "currency": null,
+    "date": "05/03/2020",
+    "vendor": "Hardcastle Restaurants Pvt Ltd.",
+    "category": "Restaurant",
+    "subtotal": 179.04,
+    "tax_amount": 8.96
+  },
+  "raw_text": null,
+  "metadata": {
+    "merchant_address": "Plot nos. 17.Survey 166/P, Hyderabad. Pin Code 500072",
+    "transaction_time": "10:47:08",
+    "line_items": [
+      {
+        "item_name": "2PC WHB Classic Scramble Egg MI",
+        "item_quantity": 1,
+        "item_price": 130.48,
+        "item_total": 130.48
+      },
+      {
+        "item_name": "Diff: Cow. To Filter ffee",
+        "item_quantity": 1,
+        "item_price": 48.56,
+        "item_total": 48.56
+      }
+    ],
+    "extraction_method": "llm_receipt_ocr",
+    "model_used": "gemini-2.0-flash-exp"
+  }
+}

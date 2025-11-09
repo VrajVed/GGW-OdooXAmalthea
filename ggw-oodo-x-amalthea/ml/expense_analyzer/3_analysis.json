@@ -1,0 +1,46 @@
+{
+  "file": "3.jpeg",
+  "timestamp": null,
+  "extracted_data": {
+    "amount": 53.2,
+    "currency": "EUR",
+    "date": "2016-09-10",
+    "vendor": "RAJ GAYLORD",
+    "category": "restaurant",
+    "subtotal": 53.2,
+    "tax_amount": null
+  },
+  "raw_text": null,
+  "metadata": {
+    "merchant_address": "KERRY PIKE VILLAGE, CORS.",
+    "transaction_time": "20:49:26",
+    "line_items": [
+      {
+        "item_name": "CHICKEN JAL FREZI",
+        "item_quantity": 1,
+        "item_price": 15.95,
+        "item_total": 15.95
+      },
+      {
+        "item_name": "PANEER MAKHNI",
+        "item_quantity": 1,
+        "item_price": 13.95,
+        "item_total": 13.95
+      },
+      {
+        "item_name": "CHEESE & ONION NAN",
+        "item_quantity": 4,
+        "item_price": 4.95,
+        "item_total": 19.8
+      },
+      {
+        "item_name": "PILAU RICE",
+        "item_quantity": 1,
+        "item_price": 3.5,
+        "item_total": 3.5
+      }
+    ],
+    "extraction_method": "llm_receipt_ocr",
+    "model_used": "gemini-2.0-flash-exp"
+  }
+}
