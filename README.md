@@ -293,6 +293,10 @@ If port 5000 is busy, change `PORT` in `backend/.env` to another port (e.g., 500
 
 For issues or questions, please check the codebase or contact the development team.
 
+## youtube link
+
+[https://www.kapwing.com/w/rjFr5a5_AE](https://www.kapwing.com/w/rjFr5a5_AE)
+
 ---
 
 **Status**: ✅ Production-Ready Backend | 🔄 Frontend Integration Pending
