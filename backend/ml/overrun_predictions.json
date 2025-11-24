@@ -1,0 +1,126 @@
+{
+  "predictions": [
+    {
+      "project_id": "44444444-4444-4444-4444-444444444444",
+      "project_name": "MVP Development",
+      "project_code": "PROJ-004",
+      "budget_amount": 30000.0,
+      "predicted_overrun": true,
+      "overrun_probability": 0.9995780590717299,
+      "features": {
+        "cpi": 1.0,
+        "spi": 0.75,
+        "vac_pct": 75.0,
+        "burn_rate_ratio": 0.0,
+        "overdue_pct": 0,
+        "blocker_density": 0,
+        "progress_pct": 75.0,
+        "days_elapsed_pct": 100.0,
+        "scope_creep_proxy": 0,
+        "finance_gaps": 0,
+        "invoice_lag_days": 0,
+        "timesheet_volatility": 0,
+        "avg_team_rate": 0.0,
+        "people_active_7d": 0
+      }
+    },
+    {
+      "project_id": "22222222-2222-2222-2222-222222222222",
+      "project_name": "Mobile App Development",
+      "project_code": "PROJ-002",
+      "budget_amount": 150000.0,
+      "predicted_overrun": false,
+      "overrun_probability": 0.0,
+      "features": {
+        "cpi": 26.94610778443114,
+        "spi": 0.6,
+        "vac_pct": 96.28888888888889,
+        "burn_rate_ratio": 27.60330578512397,
+        "overdue_pct": 75.0,
+        "blocker_density": 0,
+        "progress_pct": 60.0,
+        "days_elapsed_pct": 100.0,
+        "scope_creep_proxy": 0.0,
+        "finance_gaps": 0,
+        "invoice_lag_days": 8.0,
+        "timesheet_volatility": 0,
+        "avg_team_rate": 120.0,
+        "people_active_7d": 0
+      }
+    },
+    {
+      "project_id": "11111111-1111-1111-1111-111111111111",
+      "project_name": "Website Redesign",
+      "project_code": "PROJ-001",
+      "budget_amount": 50000.0,
+      "predicted_overrun": true,
+      "overrun_probability": 0.9202537515927182,
+      "features": {
+        "cpi": 1.091127098321343,
+        "spi": 0.455,
+        "vac_pct": 8.351648351648358,
+        "burn_rate_ratio": 229.12087912087912,
+        "overdue_pct": 80.0,
+        "blocker_density": 0.4,
+        "progress_pct": 45.5,
+        "days_elapsed_pct": 100.0,
+        "scope_creep_proxy": 0.6,
+        "finance_gaps": 0,
+        "invoice_lag_days": 43.0,
+        "timesheet_volatility": 0,
+        "avg_team_rate": 150.0,
+        "people_active_7d": 0
+      }
+    },
+    {
+      "project_id": "33333333-3333-3333-3333-333333333333",
+      "project_name": "ERP System Migration",
+      "project_code": "PROJ-003",
+      "budget_amount": 500000.0,
+      "predicted_overrun": true,
+      "overrun_probability": 0.6497367892304602,
+      "features": {
+        "cpi": 1.9774011299435028,
+        "spi": 0.35,
+        "vac_pct": 49.42857142857143,
+        "burn_rate_ratio": 242.46575342465752,
+        "overdue_pct": 100.0,
+        "blocker_density": 0.25,
+        "progress_pct": 35.0,
+        "days_elapsed_pct": 100.0,
+        "scope_creep_proxy": 0.5,
+        "finance_gaps": 75000.0,
+        "invoice_lag_days": 0,
+        "timesheet_volatility": 0,
+        "avg_team_rate": 200.0,
+        "people_active_7d": 0
+      }
+    },
+    {
+      "project_id": "55555555-5555-5555-5555-555555555555",
+      "project_name": "Public Portal System",
+      "project_code": "PROJ-005",
+      "budget_amount": 1000000.0,
+      "predicted_overrun": true,
+      "overrun_probability": 0.998440058262341,
+      "features": {
+        "cpi": 1.0,
+        "spi": 0.25,
+        "vac_pct": 25.0,
+        "burn_rate_ratio": 0.0,
+        "overdue_pct": 0,
+        "blocker_density": 0,
+        "progress_pct": 25.0,
+        "days_elapsed_pct": 100.0,
+        "scope_creep_proxy": 0,
+        "finance_gaps": 0,
+        "invoice_lag_days": 0,
+        "timesheet_volatility": 0,
+        "avg_team_rate": 0.0,
+        "people_active_7d": 0
+      }
+    }
+  ],
+  "generated_at": "2025-11-08T17:16:02.537782",
+  "total_projects": 5
+}
